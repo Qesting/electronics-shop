@@ -114,6 +114,16 @@ return new class extends Migration
             $table->timestamps();
         });
 
+        Schema::create('images', function (Blueprint $table) {
+            $table->id();
+
+            $table->string('origin', 100);
+            $table->string('name', 100);
+            $table->morphs('resource');
+
+            $table->timestamps();
+        });
+
         // [x] add product reviews
 
         Schema::create('products', function (Blueprint $table) {
