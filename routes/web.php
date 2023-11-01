@@ -1,7 +1,11 @@
 <?php
 
+use App\Http\Controllers\ProductController;
+use App\Models\{Image, Product};
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+
+
 
 /*
 |--------------------------------------------------------------------------
@@ -14,8 +18,18 @@ use Inertia\Inertia;
 |
 */
 
+Route::get(
+    '/product/{id}',
+    [ProductController::class, 'retrieve']
+)->whereNumber('id');
+
+Route::get(
+    '/products/{categoryId}',
+    [ProductController::class, 'retrieveCategory']
+)->whereNumber('categoryId');
+
 Route::get('/', function () {
     return Inertia::render('Test', [
-        'args' => []
+        'args' => [Image::with(['resource'])->get()]
     ]);
 });

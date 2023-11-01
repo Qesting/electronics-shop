@@ -89,7 +89,8 @@ return new class extends Migration
            $table->id();
 
             $table->string('name', 40);
-            $table->foreignId('supercategory')->constrained('categories', 'id')->nullable();
+            $table->string('code', 10);
+            $table->foreignId('supercategory')->nullable()->constrained('categories', 'id');
 
             $table->timestamps();
         });
@@ -119,6 +120,7 @@ return new class extends Migration
 
             $table->string('origin', 100);
             $table->string('name', 100);
+            $table->boolean('thumbnail')->default(false);
             $table->morphs('resource');
 
             $table->timestamps();
