@@ -50,7 +50,7 @@ class Product extends Model
      */
     public function sales(): BelongsToMany
     {
-        return $this->belongsToMany(Sale::class)->withPivot('price');
+        return $this->belongsToMany(Sale::class, 'sale_product')->withPivot('price');
     }
 
     /**
@@ -60,7 +60,7 @@ class Product extends Model
      */
     public function orders(): BelongsToMany
     {
-        return $this->belongsToMany(Order::class)->withPivot('returned');
+        return $this->belongsToMany(Order::class, 'order_product')->withPivot('returned');
     }
 
     /**
