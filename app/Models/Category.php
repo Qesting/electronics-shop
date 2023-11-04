@@ -15,7 +15,7 @@ class Category extends Model
      */
     public function subcategories(): HasMany
     {
-        return $this->hasMany(Category::class);
+        return $this->hasMany(Category::class, 'supercategory_id', 'id');
     }
 
     /**
@@ -25,6 +25,20 @@ class Category extends Model
      */
     public function supercategory(): BelongsTo
     {
-        return $this->belongsTo(Category::class);
+        return $this->belongsTo(Category::class, 'supercategory_id', 'id');
+    }
+
+    /**
+     * Get the top level parent that owns the Category
+     *
+     * @return App\Models\Category
+     */
+    public function topLevelParent(): Category
+    {
+        $that = $this;
+        while (!is_null($that->supercategory_id)) {
+            $that = $that->supercategory;
+        }
+        return $that;
     }
 }

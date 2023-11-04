@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('county', 20);
             $table->string('city', 30);
             $table->char('postal_code', 6);
-            $table->string('street', 20);
+            $table->string('street', 40);
             $table->unsignedSmallInteger('building');
             $table->unsignedSmallInteger('apartment')->nullable();
 
@@ -90,7 +90,8 @@ return new class extends Migration
 
             $table->string('name', 40);
             $table->string('code', 10);
-            $table->foreignId('supercategory')->nullable()->constrained('categories', 'id');
+            $table->enum('grammatical_gender', ['M', 'F'])->nullable();
+            $table->foreignId('supercategory_id')->nullable()->constrained('categories', 'id');
 
             $table->timestamps();
         });
@@ -131,7 +132,7 @@ return new class extends Migration
         Schema::create('products', function (Blueprint $table) {
            $table->id();
 
-            $table->string('name', 40);
+            $table->string('name', 100);
             $table->foreignId('manufacturer_id')->constrained();
             $table->foreignId('category_id')->constrained();
             $table->double('price');
