@@ -3,8 +3,10 @@
 namespace Database\Factories;
 
 use App\Models\Category;
+use App\Models\Image;
 use App\Models\Manufacturer;
 use App\Models\Product;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -12,6 +14,13 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class ProductFactory extends Factory
 {
+    /**
+     * Generate properties based on the received directives.
+     *
+     * @param array $directives
+     *
+     * @return array
+     */
     protected function randomProperties(array $directives): array
     {
         $result = [];
@@ -30,6 +39,14 @@ class ProductFactory extends Factory
         return $result;
     }
 
+    /**
+     * Render properties into name.
+     *
+     * @param array $properties
+     * @param string $name
+     *
+     * @return string
+     */
     protected function propsInName(array $properties, string $name): string
     {
         if (count($properties) === 0) return $name;
@@ -46,6 +63,14 @@ class ProductFactory extends Factory
         return $name.' '.implode(' ', $renderedProperties);
     }
 
+    /**
+     * Render product name based on its parent Category.
+     *
+     * @param App\Models\Category $category
+     * @param array $properties
+     *
+     * @return string
+     */
     protected function renderName(Category $category, array $properties): string
     {
         $words = explode(' ', $category->name);
@@ -79,10 +104,15 @@ class ProductFactory extends Factory
         ];
     }
 
-    public function configure()
+    /**
+     * Further configure the model's state after receiving all properties.
+     *
+     * @return Database\Factories\ProductFactory
+     */
+    public function configure(): ProductFactory
     {
         return $this->afterMaking(function (Product $product) {
-            $category = $product->category ?? Category::doesntHave('subcategories')->inRandomOrder()->first();
+            $category = $product->category ?? Category::isLeaf()->inRandomOrder()->first();
             $manufacturer = $product->manufacturer ?? Manufacturer::inRandomOrder()->first();
             $directives = match($category->topLevelParent()->code) {
                 'kon' => [
@@ -561,6 +591,18 @@ class ProductFactory extends Factory
             $product->name = $name;
             $product->details = json_encode($properties);
             $product->price = $price;
+            $product->save();
+
+            $limit = rand(1, 3);
+            $images = new Collection();
+            for ($index = 0; $index < $limit; $index++) {
+                $image = new Image();
+                $image->origin = 'https://placehold.co/';
+                $image->name = '200?text=' . $index;
+                if ($index === 0) $image->thumbnail = true;
+                $images->push($image);
+            }
+            $product->images()->saveMany($images);
             $product->save();
         });
     }

@@ -1,7 +1,10 @@
 <?php
 
 use App\Models\Category;
+use App\Models\Image;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
@@ -94,11 +97,25 @@ return new class extends Migration
 
         flattenModelList($categoryTree, function (array $categoryInfo, string $code, array $parent) {
             $category = new Category();
-            if (!is_null($parent['id'])) $category->supercategory()->associate(Category::findOrFail($parent['id']));
-            $name = (($categoryInfo['ignoreParent'] ?? false) ? null : $category->topLevelParent()->name.(is_null($category->topLevelParent()->name) ? '' : ' ')) . $categoryInfo['name'];
+            $hasParent = !is_null($parent['id']);
+            if ($hasParent) $category->supercategory()->associate(Category::findOrFail($parent['id']));
+
+            $ancestor = $category->topLevelParent() ?? $category;
+            $name = (($categoryInfo['ignoreParent'] ?? false) ? null : $ancestor->name.(is_null($ancestor->name) ? '' : ' ')) . $categoryInfo['name'];
             $category->name = $name;
             $category->code = $code;
             $category->grammatical_gender = $categoryInfo['grammaticalGender'] ?? null;
+            $category->save();
+
+            if ($hasParent) {
+                $image = new Image();
+                $image->origin = 'https://placehold.co/';
+                $image->name = '200x100?text='.str_replace(' ', '+', $category->code);
+                $image->resource_id = $category->id;
+                $image->resource_type = get_class($category);
+                $category->image()->save($image);
+            }
+
             $category->save();
             return $category;
         });
@@ -109,6 +126,12 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::table('products', function(Blueprint $table) {
+            $table->dropForeign(['category_id']);
+        });
         Category::truncate();
+        Schema::table('products', function (Blueprint $table) {
+            $table->foreign('category_id')->references('id')->on('categories');
+        });
     }
 };
