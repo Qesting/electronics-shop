@@ -1,9 +1,8 @@
 <?php
 
+use App\Http\Controllers\PageController;
 use App\Http\Controllers\ProductController;
-use App\Models\{Image, Product};
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 
 
 
@@ -19,17 +18,13 @@ use Inertia\Inertia;
 */
 
 Route::get(
-    '/product/{id}',
+    '/product/{productId}',
     [ProductController::class, 'retrieve']
-)->whereNumber('id');
+)->whereNumber('productId');
 
 Route::get(
-    '/products/{categoryId}',
-    [ProductController::class, 'retrieveCategory']
+    '/category/{categoryId}',
+    [PageController::class, 'categoryPage']
 )->whereNumber('categoryId');
 
-Route::get('/', function () {
-    return Inertia::render('Test', [
-        'args' => [Image::with(['resource'])->get()]
-    ]);
-});
+Route::get('/', [PageController::class, 'indexPage']);

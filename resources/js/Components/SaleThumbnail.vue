@@ -1,0 +1,29 @@
+<script setup>
+import { Link } from '@inertiajs/vue3';
+
+    defineProps({
+        sale: {
+            type: Object,
+            required: true
+        }
+    });
+
+    const imageSrc = image => image ? image.origin + image.name : '';
+</script>
+
+<template>
+    <div
+        class="mx-2 p-2 basis-1/5 lg:basis-1/6 flex-shrink-0 text-center flex flex-col items-center border border-white rounded-lg hover:border-red-700 transition-colors duration-300"
+    >
+        <img
+            :src="imageSrc(sale.images[0])"
+            alt="ilustracja wyprzedaży"
+            class="rounded-lg"
+        />
+        <Link
+            :href="'/sale/' + sale.id"
+            class="underline transition-colors duration-300 hover:text-red-700 capitalize"
+        >{{ sale.name }}</Link>
+        <span><i>Tylko do {{ sale.expires_at }}</i></span>
+    </div>
+</template>
