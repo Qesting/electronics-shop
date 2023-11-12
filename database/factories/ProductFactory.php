@@ -603,7 +603,7 @@ class ProductFactory extends Factory
                 $images->push($image);
             }
             $product->images()->saveMany($images);
-            $product->save();
+
         });
     }
 }
