@@ -13,7 +13,7 @@
     <div class="lg:rounded-t-lg mx-auto lg:w-3/4 lg:mt-32 h-min-screen bg-white shadow-md relative z-10">
         <Navbar :categories="categories"/>
         <slot/>
-        <footer class="bg-red-700 text-white px-8 py-4">
+        <footer class="bg-red-700 text-white px-8 py-4 clear-both">
             <div class="flex flex-row justify-around text-center">
                 <div class="grid grid-cols-1 gap-y-2">
                     <h4 class="text-xl mb-2">Witryna</h4>

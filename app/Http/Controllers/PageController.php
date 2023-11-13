@@ -27,13 +27,13 @@ class PageController extends Controller
     /**
      * Retrieve the products for the specified category.
      *
-     * @param int $categoryId
+     * @param App\Models\Category $category
      *
      * @return Illuminate\Database\Eloquent\Collection<Product>
      */
-    public function products(int $categoryId): Collection
+    public function products(Category $category, ?string $filters = null): Collection
     {
-        return Product::with([
+        $products = Product::with([
             'manufacturer' => function (BelongsTo $query) {
                 $query->select('id', 'name');
             },
@@ -43,9 +43,29 @@ class PageController extends Controller
             'images' => function (MorphMany $query) {
                 $query->where('thumbnail', '=', true);
             }
-        ])->whereBelongsTo(
-            Category::findOrFail($categoryId)
-        )->get([
+        ])->whereBelongsTo($category);
+
+        if (!is_null($filters)) {
+            $filterArray = json_decode($filters, true);
+            foreach ($filterArray as $filterKey => $filter) {
+                $jsonPath = "details->{$filterKey}->value";
+                if (isset($filter['max']) || isset($filter['min'])) {
+                    $min = $filter['min'] ?? PHP_INT_MIN;
+                    $max = $filter['max'] ?? PHP_INT_MAX;
+                    if ($filterKey === 'price') {
+                        $products = $products->whereBetween('price', [$min, $max]);
+                    } else {
+                        $products = $products->whereRaw(
+                            "CAST( JSON_EXTRACT(`details`, '$.{$filterKey}.value') AS DOUBLE) BETWEEN {$min} AND {$max}"
+                        );
+                    }
+                } else {
+                    $products = $products->whereIn($jsonPath, $filter);
+                }
+            }
+        }
+
+        return $products->get([
             'id',
             'name',
             'price',
@@ -133,12 +153,17 @@ class PageController extends Controller
      *
      * @return Inertia\Response
      */
-    public function categoryPage(int $categoryId): Response
+    public function categoryPage(int $categoryId, ?string $filters = null): Response
     {
+        $category = Category::findOrFail($categoryId);
+
         return Inertia::render(
             'Category',
             [
-                'products' => $this->products($categoryId)
+                'categories' => $this->categories(),
+                'category' => $category,
+                'properties' => CategoryDetailsController::getPropertyRanges($category),
+                'products' => $this->products($category, $filters)
             ]
         );
     }

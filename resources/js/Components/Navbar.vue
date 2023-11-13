@@ -62,9 +62,14 @@
         <div class="flex items-center bg-red-700 text-white py-4 px-4 lg:rounded-t-lg">
             <button
                 @click="menuButtonClick"
-                class="bi-list text-2xl box-border w-10 p-0.5 rounded-lg hover:bg-red-800 transition-colors duration-300"
+                class="bi-list text-2xl text-center inline-block box-border w-10 h-10 p-0.5 rounded-lg hover:bg-red-800 transition-colors duration-300"
                 aria-label="menu kategorii"
             ></button>
+            <Link
+                href="/"
+                class="bi-house-fill text-2xl text-center inline-block box-border w-10 h-10 p-0.5 rounded-lg hover:bg-red-800 transition-colors duration-300"
+                aria-label="strona główna"
+            ></Link>
             <h1 class="grow text-center text-3xl capitalize font-bold">ars insolitam</h1>
         </div>
         <Transition
@@ -94,7 +99,7 @@
                         </button>
                         <Link
                             v-else
-                            :href="'category/' + category.id"
+                            :href="'/category/' + category.id"
                             class="w-40 text-left pl-5 pr-1 py-1 capitalize relative text-white bg-red-700 hover:bg-red-800 hover:underline active:bg-red-800 focus:bg-red-800 transition-colors duration-300"
                         >
                             <span>{{ category.name }}</span>
@@ -116,7 +121,7 @@
                             class="mx-2 p-2 basis-1/4 min-w-fit lg:basis-1/5 border border-white rounded-lg hover:border-red-600 transition-colors duration-300 redden-child-link"
                         >
                             <Link
-                                :href="'category/' + child.id"
+                                :href="'/category/' + child.id"
                                 class="underline capitalize flex flex-col items-center transition-colors duration-300"
                             >
                                 <span>{{ child.name }}</span>

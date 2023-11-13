@@ -22,8 +22,13 @@ Route::get(
     [ProductController::class, 'retrieve']
 )->whereNumber('productId');
 
+// those entities are for {}, used not to confuse the engine
+Route::permanentRedirect(
+    '/category/{categoryId}', '/category/{categoryId}/%7B%7D'
+)->whereNumber('categoryId');
+
 Route::get(
-    '/category/{categoryId}',
+    '/category/{categoryId}/{filters?}',
     [PageController::class, 'categoryPage']
 )->whereNumber('categoryId');
 
