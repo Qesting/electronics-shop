@@ -1,6 +1,6 @@
 <script setup>
     import { ref, reactive, computed } from 'vue';
-    import { Link } from '@inertiajs/vue3';
+    import { Link, Head } from '@inertiajs/vue3';
 
     import Layout from "./../Components/Layout.vue";
     import Product from './../Components/Product.vue';
@@ -11,6 +11,8 @@
         properties: Object,
         products: Array
     });
+
+    const capitalize = string => string.split(/\s+/).map(word => word[0].toUpperCase() + word.substring(1)).join(' ');
 
     const emptyFilters = {};
     Object.keys(props.properties).forEach(key => {
@@ -83,6 +85,10 @@
 </script>
 
 <template>
+    <Head>
+        <title>{{ capitalize(category.name) }} | Ars Insolitam</title>
+        <meta name="description" :content="'Przeglądaj ' + category.name + ' w Ars Insolitam.'"/>
+    </Head>
     <Layout :categories="categories">
         <Transition
             name="expand"
