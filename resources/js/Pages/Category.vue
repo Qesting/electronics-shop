@@ -4,6 +4,7 @@
 
     import Layout from "./../Components/Layout.vue";
     import Product from './../Components/Product.vue';
+    import Section from '../Components/Section.vue';
 
     const props = defineProps({
         categories: Array,
@@ -30,6 +31,12 @@
             }
         });
         return `./${JSON.stringify(finalFilters)}`;
+    });
+    const sortOptions = ref('{"property": "orderCount", "asc": false}');
+    const sortedProducts = computed(() => {
+        const {property, asc} = JSON.parse(sortOptions.value);
+        console.log(sortOptions.value, property, asc);
+        return props.products.sort((a, b) => asc ? a[property] - b[property] : b[property] - a[property]);
     });
 
     const sliderValue = (event, property, key) => {
@@ -110,6 +117,20 @@
                 <form
                     class="w-screen lg:w-full px-2 h-full overflow-auto lg:overflow-visible"
                 >
+                    <article>
+                        <h3
+                            class="text-center font-bold"
+                        >Sortowanie</h3>
+                        <select
+                            v-model="sortOptions"
+                            class="block w-min mx-auto p-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors duration-300"
+                        >
+                            <option value='{"property": "orderCount", "asc": false}'>Popularność</option>
+                            <option value='{"property": "rating", "asc": false}'>Ocena</option>
+                            <option value='{"property": "price", "asc": true}'>Cena: od najtańszych</option>
+                            <option value='{"property": "price", "asc": false}'>Cena: od najdroższych</option>
+                        </select>
+                    </article>
                     <article
                         v-for="key in Object.keys(properties)"
                         class="my-2"
@@ -170,19 +191,14 @@
                 </form>
             </aside>
         </Transition>
-        <main
+        <Section
             class="lg:w-4/5 lg:float-left mb-4"
+            :name="capitalize(category.name)"
         >
-            <h2
-                class="text-3xl capitalize text-center mb-4 py-8 font-bold relative"
-            >
-                <span>{{ category.name }}</span>
-                <span class="block w-full h-0.5 absolute bottom-0 left-0 right-0 bg-gradient-to-r from-white via-red-700 to-white"></span>
-            </h2>
             <div class="grid grid-cols-4">
-                <Product v-for="product in products" :key="product.id" :product="product"/>
+                <Product v-for="product in sortedProducts" :key="product.id" :product="product"/>
             </div>
-        </main>
+        </Section>
         <button
             @click="filterSidebarExpanded = !filterSidebarExpanded"
             type="button"

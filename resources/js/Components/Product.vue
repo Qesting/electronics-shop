@@ -9,6 +9,9 @@ import { Link } from '@inertiajs/vue3';
     });
 
     const imageSrc = image => image ? image.origin + image.name : '';
+    const locale =  navigator.languages && navigator.languages.length
+        ? navigator.languages[0]
+        : navigator.language;
 </script>
 
 <template>
@@ -25,7 +28,7 @@ import { Link } from '@inertiajs/vue3';
             class="underline transition-colors duration-300 hover:text-red-700 capitalize"
         >{{ product.name }}</Link>
         <div class="mt-auto mb-0 flex flex-col items-center">
-            <span><i>{{ product.manufacturer.name }}</i>, {{ product.price.toLocaleString() }} zł</span>
+            <span><i>{{ product.manufacturer.name }}</i>, {{ product.price.toLocaleString(locale, {style: 'currency', currency: 'PLN', minimumFractionDigits: 2}) }}</span>
             <Link
                 :href="'/addToCart/' + product.id"
                 class="rounded-lg text-white bg-red-700 py-1 px-2 hover:bg-red-800 transition-colors duration-300"

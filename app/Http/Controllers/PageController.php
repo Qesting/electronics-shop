@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\Sale;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -60,7 +61,11 @@ class PageController extends Controller
                         );
                     }
                 } else {
-                    $products = $products->whereIn($jsonPath, $filter);
+                    if ($filterKey === 'manufacturer') {
+                        $products = $products->whereHas('manufacturer', fn (Builder $query) => $query->whereIn('name', $filter));
+                    } else {
+                        $products = $products->whereIn($jsonPath, $filter);
+                    }
                 }
             }
         }
@@ -180,8 +185,9 @@ class PageController extends Controller
         return Inertia::render(
             'Product',
             [
+                'categories' => $this->categories(),
                 'product' => $this->product($productId)
             ]
-            );
+        );
     }
 }

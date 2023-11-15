@@ -505,7 +505,15 @@ class CategoryDetailsController extends Controller
     public static function getPropertyRanges(Category $category): array
     {
         $directives = self::matchDirectives($category);
-        $result = [];
+        $result = [
+            'manufacturer' => [
+                'type' => 'choice',
+                'name' => 'producent',
+                'choices' => $category->products->map(
+                    fn (Product $product) => $product->manufacturer->name
+                )->unique()
+            ]
+        ];
         foreach ($directives as $key => $directive) {
             $jsonPath = 'details->'.$key.'->value';
             if ($directive[0] === 'value') {

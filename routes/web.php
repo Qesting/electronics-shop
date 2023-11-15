@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get(
     '/product/{productId}',
-    [ProductController::class, 'retrieve']
+    [PageController::class, 'productPage']
 )->whereNumber('productId');
 
 // those entities are for {}, used not to confuse the engine

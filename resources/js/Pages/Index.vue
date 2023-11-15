@@ -2,7 +2,7 @@
     import { Head } from '@inertiajs/vue3';
 
     import Layout from '../Components/Layout.vue';
-    import IndexSection from '../Components/IndexSection.vue';
+    import IndexSection from '../Components/Section.vue';
     import Product from '../Components/Product.vue';
     import SaleThumbnail from '../Components/SaleThumbnail.vue';
 
