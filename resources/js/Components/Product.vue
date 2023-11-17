@@ -1,17 +1,18 @@
 <script setup>
-import { Link } from '@inertiajs/vue3';
+import { Link, useForm } from '@inertiajs/vue3';
+import Helper from '../Helper';
 
-    defineProps({
+    const props = defineProps({
         product: {
             type: Object,
             required: true
         }
     });
 
-    const imageSrc = image => image ? image.origin + image.name : '';
-    const locale =  navigator.languages && navigator.languages.length
-        ? navigator.languages[0]
-        : navigator.language;
+    const cart = useForm({
+        productId: props.product.id,
+        count: 1
+    });
 </script>
 
 <template>
@@ -19,7 +20,7 @@ import { Link } from '@inertiajs/vue3';
         class="mx-2 p-2 basis-1/5 lg:basis-1/6 flex-shrink-0 text-center flex flex-col items-center border border-white rounded-lg hover:border-red-700 transition-colors duration-300"
     >
         <img
-            :src="imageSrc(product.images[0])"
+            :src="Helper.imageSrc(product.images[0])"
             alt="zdjęcie produktu"
             class="rounded-lg"
         />
@@ -28,11 +29,12 @@ import { Link } from '@inertiajs/vue3';
             class="underline transition-colors duration-300 hover:text-red-700 capitalize"
         >{{ product.name }}</Link>
         <div class="mt-auto mb-0 flex flex-col items-center">
-            <span><i>{{ product.manufacturer.name }}</i>, {{ product.price.toLocaleString(locale, {style: 'currency', currency: 'PLN', minimumFractionDigits: 2}) }}</span>
-            <Link
-                :href="'/addToCart/' + product.id"
+            <span><i>{{ product.manufacturer.name }}</i>, {{ Helper.localeCurrencyString(product.price) }}</span>
+            <button
+                :disabled="cart.processing"
+                @click="cart.put('/cart/add', { preserveState: true, preserveScroll: true })"
                 class="rounded-lg text-white bg-red-700 py-1 px-2 hover:bg-red-800 transition-colors duration-300"
-            >Do koszyka</Link>
+            >Do koszyka</button>
         </div>
     </div>
 </template>

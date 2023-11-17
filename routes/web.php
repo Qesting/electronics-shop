@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\PageController;
-use App\Http\Controllers\ProductController;
+use App\Http\Controllers\CartController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -22,14 +22,30 @@ Route::get(
     [PageController::class, 'productPage']
 )->whereNumber('productId');
 
-// those entities are for {}, used not to confuse the engine
-Route::permanentRedirect(
-    '/category/{categoryId}', '/category/{categoryId}/%7B%7D'
-)->whereNumber('categoryId');
-
 Route::get(
-    '/category/{categoryId}/{filters?}',
+    '/category/{categoryId}',
     [PageController::class, 'categoryPage']
 )->whereNumber('categoryId');
+
+Route::post(
+    '/category/{categoryId}',
+    [PageController::class, 'filteredCategoryPage']
+)->whereNumber('categoryId');
+
+Route::match(
+    ['get', 'post'],
+    '/cart',
+    [PageController::class, 'cartPage']
+);
+
+Route::put(
+    '/cart/add',
+    [CartController::class, 'add']
+);
+
+Route::put(
+    '/cart/update',
+    [CartController::class, 'update']
+);
 
 Route::get('/', [PageController::class, 'indexPage']);

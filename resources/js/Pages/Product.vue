@@ -1,7 +1,7 @@
 <script setup>
     import Layout from '../Components/Layout.vue';
     import Section from '../Components/Section.vue';
-    import { Head, Link } from '@inertiajs/vue3';
+    import { Head, Link, useForm } from '@inertiajs/vue3';
     import { ref } from 'vue';
 
     const props = defineProps({
@@ -13,7 +13,10 @@
     const imageSrc = image => image ? image.origin + image.name : '';
 
     const selectedImage = ref(props.product.images[0]);
-    const numberToCart = ref(1);
+    const form = useForm({
+        productId: props.product.id,
+        count: 1
+    });
 
     const locale =  navigator.languages && navigator.languages.length
         ? navigator.languages[0]
@@ -27,6 +30,10 @@
         <meta name="description" :content="product.name + ' w Ars Insolitam.'"/>
     </Head>
     <main>
+        <Link
+            class="capitalize ml-8 hover:underline"
+            :href="`/category/${product.category.id}`"
+        ><span class="bi-arrow-left"></span> {{ product.category.name }}</Link>
         <Section class="flex justify-between px-8 mx-auto lg:w-4/5 py-4" :name="capitalize(product.name)">
             <article class="flex flex-row w-3/5">
                 <div class="w-4/5 p-2">
@@ -57,11 +64,11 @@
                 <div class="border border-gray-800 rounded-lg p-4 text-right">
                     <h3 class="text-2xl">{{ product.price.toLocaleString(locale, {style: 'currency', currency: 'PLN', minimumFractionDigits: 2}) }}</h3>
                     <div class="flex items-center justify-end mt-4">
-                        <input type="number" min="1" inputmode="numeric" v-model="numberToCart" class="w-14 mr-2 p-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors duration-300 flex-grow"/>
-                        <Link
-                        :href="`/addToCart/${product.id}/${numberToCart}`"
-                        class="inline-block rounded-lg text-white bg-red-700 p-2 hover:bg-red-800 transition-colors duration-300"
-                        >Do koszyka</Link>
+                        <input type="number" min="1" inputmode="numeric" v-model="form.count" class="w-14 mr-2 p-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors duration-300 flex-grow"/>
+                        <button
+                            @click="form.put('/cart/add')"
+                            class="inline-block rounded-lg text-white bg-red-700 p-2 hover:bg-red-800 transition-colors duration-300"
+                        >Do koszyka</button>
                     </div>
                 </div>
             </article>

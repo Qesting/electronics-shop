@@ -1,5 +1,7 @@
 <script setup>
-import { Link } from '@inertiajs/vue3';
+
+    import { Link } from '@inertiajs/vue3';
+    import Helper from '../Helper';
 
     defineProps({
         sale: {
@@ -8,7 +10,6 @@ import { Link } from '@inertiajs/vue3';
         }
     });
 
-    const imageSrc = image => image ? image.origin + image.name : '';
 </script>
 
 <template>
@@ -16,7 +17,7 @@ import { Link } from '@inertiajs/vue3';
         class="mx-2 p-2 basis-1/5 lg:basis-1/6 flex-shrink-0 text-center flex flex-col items-center border border-white rounded-lg hover:border-red-700 transition-colors duration-300"
     >
         <img
-            :src="imageSrc(sale.images[0])"
+            :src="Helper.imageSrc(sale.images[0])"
             alt="ilustracja wyprzedaży"
             class="rounded-lg"
         />

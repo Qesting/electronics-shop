@@ -1,6 +1,7 @@
 <script setup>
-    import { ref, reactive, computed } from 'vue';
-    import { Link, Head } from '@inertiajs/vue3';
+    import { ref, computed } from 'vue';
+    import { Head, useForm } from '@inertiajs/vue3';
+    import Helper from '../Helper';
 
     import Layout from "./../Components/Layout.vue";
     import Product from './../Components/Product.vue';
@@ -13,29 +14,23 @@
         products: Array
     });
 
-    const capitalize = string => string.split(/\s+/).map(word => word[0].toUpperCase() + word.substring(1)).join(' ');
-
     const emptyFilters = {};
     Object.keys(props.properties).forEach(key => {
         emptyFilters[key] = props.properties[key].type === 'value' ? {} : []
     });
 
     const filterSidebarExpanded = ref(false);
-    const filterValues = reactive(emptyFilters);
-    const linkWithFilters = computed(() => {
-        const finalFilters = {};
-        Object.keys(filterValues).forEach(key => {
-            const filter = filterValues[key];
-            if (Object.keys(filter)?.length) {
-                finalFilters[key] = filter;
-            }
+    const filterValues = useForm(emptyFilters);
+    const filter = () => {
+        filterValues.post(`/category/${props.category.id}`, {
+            preserveState: true,
+            preserveScroll: true
         });
-        return `./${JSON.stringify(finalFilters)}`;
-    });
-    const sortOptions = ref('{"property": "orderCount", "asc": false}');
+    };
+
+    const sortOptions = ref({property: 'orderCount', asc: false});
     const sortedProducts = computed(() => {
-        const {property, asc} = JSON.parse(sortOptions.value);
-        console.log(sortOptions.value, property, asc);
+        const {property, asc} = sortOptions.value;
         return props.products.sort((a, b) => asc ? a[property] - b[property] : b[property] - a[property]);
     });
 
@@ -93,7 +88,7 @@
 
 <template>
     <Head>
-        <title>{{ capitalize(category.name) }} | Ars Insolitam</title>
+        <title>{{ Helper.capitalize(category.name) }} | Ars Insolitam</title>
         <meta name="description" :content="'Przeglądaj ' + category.name + ' w Ars Insolitam.'"/>
     </Head>
     <Layout :categories="categories">
@@ -115,6 +110,7 @@
                     <span class="block w-full h-0.5 absolute bottom-0 left-0 right-0 bg-gradient-to-r from-white via-red-700 to-white"></span>
                 </h2>
                 <form
+                    @submit.prevent="filter"
                     class="w-screen lg:w-full px-2 h-full overflow-auto lg:overflow-visible"
                 >
                     <article>
@@ -125,10 +121,10 @@
                             v-model="sortOptions"
                             class="block w-min mx-auto p-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors duration-300"
                         >
-                            <option value='{"property": "orderCount", "asc": false}'>Popularność</option>
-                            <option value='{"property": "rating", "asc": false}'>Ocena</option>
-                            <option value='{"property": "price", "asc": true}'>Cena: od najtańszych</option>
-                            <option value='{"property": "price", "asc": false}'>Cena: od najdroższych</option>
+                            <option :value="{property: 'orderCount', asc: false}">Popularność</option>
+                            <option :value="{property: 'rating', asc: false}">Ocena</option>
+                            <option :value="{property: 'price', asc: true}">Cena: od najtańszych</option>
+                            <option :value="{property: 'price', asc: false}">Cena: od najdroższych</option>
                         </select>
                     </article>
                     <article
@@ -178,24 +174,24 @@
                         class="w-full mx-auto lg:w-full px-8 sm:w-3/4 md:w-1/2 md:px-2"
                     >
                         <button
-                            @click="Object.keys(filterValues).forEach(key => delete filterValues[key])"
+                            @click="filterValues.reset()"
+                            :disabled="filterValues.processing"
                             type="reset"
                             class="block w-32 mx-auto text-center py-2 px-4 text-white bg-gray-800 rounded-lg my-2 transition-colors duration-300 hover:bg-gray-900"
                         ><span class="bi-arrow-clockwise"></span> Wyczyść</button>
-                        <Link
-                            :href="linkWithFilters"
-                            preserve-state
+                        <button
+                            :disabled="filterValues.processing"
                             class="block w-32 mx-auto text-center py-2 px-4 text-white bg-red-700 rounded-lg my-2 transition-colors duration-300 hover:bg-red-800"
-                        ><span class="bi-check-lg"></span> Zastosuj</Link>
+                        ><span class="bi-check-lg"></span> Zastosuj</button>
                     </div>
                 </form>
             </aside>
         </Transition>
         <Section
-            class="lg:w-4/5 lg:float-left mb-4"
-            :name="capitalize(category.name)"
+            class="lg:w-4/5 lg:float-left mb-4 py-4"
+            :name="Helper.capitalize(category.name)"
         >
-            <div class="grid grid-cols-4">
+            <div class="grid grid-cols-4 gap-y-2">
                 <Product v-for="product in sortedProducts" :key="product.id" :product="product"/>
             </div>
         </Section>
