@@ -49,7 +49,7 @@
     const totalPrice = props.products
         .map(
             product =>  product.price * quantities[product.id].quantity
-        ).reduce((accumulator, value) => accumulator + value);
+        ).reduce((accumulator, value) => accumulator + value, 0);
 </script>
 
 <template>

@@ -57,8 +57,8 @@
 </script>
 
 <template>
-    <nav class="border-b-2 border-red-700 lg:border-r sticky top-0 z-40">
-        <div class="flex items-center bg-red-700 text-white py-4 px-4">
+    <nav class="border-b-2 border-red-700 lg:border-r top-0 z-40 rounded-t-lg">
+        <div class="flex items-center bg-red-700 text-white py-4 px-4 rounded-t-lg">
             <button
                 @click="menuButtonClick"
                 class="bi-list text-2xl text-center inline-block box-border w-10 h-10 p-0.5 rounded-lg hover:bg-red-800 transition-colors duration-300"
@@ -85,7 +85,7 @@
         >
             <div
                 v-show="expanded"
-                class="h-0 overflow-hidden flex flex-row transition-[height] duration-300 bg-white"
+                class="h-0 overflow-hidden flex flex-row transition-[height] duration-300 bg-white "
             >
                 <div class="inline-flex flex-col w-min justify-start items-start bg-red-700 pb-2">
                     <template

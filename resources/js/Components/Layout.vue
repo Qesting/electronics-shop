@@ -10,7 +10,7 @@
     <div class="bg-hero-pattern h-screen fixed top-0 left-0 right-0 bottom-0 z-0">
 
     </div>
-    <div class="mx-auto lg:w-3/4 lg:mt-32 min-h-screen bg-white shadow-md relative z-10 flex flex-col">
+    <div class="mx-auto lg:w-3/4 lg:mt-32 min-h-screen bg-white shadow-md relative z-10 flex flex-col rounded-t-lg">
         <Navbar :categories="categories"/>
         <div class="flex-grow">
             <slot/>
