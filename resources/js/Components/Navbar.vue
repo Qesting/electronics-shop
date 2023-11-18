@@ -103,7 +103,6 @@
                         </button>
                         <Link
                             v-else
-                            preserve-state
                             :href="'/category/' + category.id"
                             class="w-40 text-left pl-5 pr-1 py-1 capitalize relative text-white bg-red-700 hover:bg-red-800 hover:underline active:bg-red-800 focus:bg-red-800 transition-colors duration-300"
                         >
@@ -126,7 +125,6 @@
                             class="mx-2 p-2 basis-1/4 min-w-fit lg:basis-1/5 border border-white rounded-lg hover:border-red-600 transition-colors duration-300 redden-child-link"
                         >
                             <Link
-                                preserve-state
                                 :href="'/category/' + child.id"
                                 class="underline capitalize flex flex-col items-center transition-colors duration-300"
                             >

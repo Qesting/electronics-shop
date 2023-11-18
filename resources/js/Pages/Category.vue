@@ -34,6 +34,8 @@
         return props.products.sort((a, b) => asc ? a[property] - b[property] : b[property] - a[property]);
     });
 
+    const navHeight = 4.5 * parseFloat(getComputedStyle(document.documentElement).fontSize); //4.5rem
+
     const sliderValue = (event, property, key) => {
         if (!filterValues[property]) {
             filterValues[property] = {};
@@ -91,7 +93,7 @@
         <title>{{ Helper.capitalize(category.name) }} | Ars Insolitam</title>
         <meta name="description" :content="'Przeglądaj ' + category.name + ' w Ars Insolitam.'"/>
     </Head>
-    <Layout :categories="categories">
+    <Layout :categories="categories" @height-change="newHeight => navHeight = newHeight">
         <Transition
             name="expand"
             :duration="300"
@@ -101,7 +103,8 @@
         >
             <aside
                 v-show="filterSidebarExpanded"
-                class="fixed top-0 bottom-0 left-0 w-0 h-screen bg-white z-30 overflow-hidden transition-[width] duration-300 lg:w-min-1/5 lg:!w-1/5 lg:relative lg:!block lg:float-left lg:h-auto"
+                class="fixed bottom-0 left-0 w-0 h-screen bg-white z-30 overflow-hidden transition-[width] duration-300 lg:w-min-1/5 lg:!w-1/5 lg:!block lg:float-left lg:h-auto lg:sticky"
+                :style="`top: ${navHeight}px;`"
             >
                 <h2
                     class="text-3xl capitalize text-center mb-4 py-8 font-bold relative w-screen lg:w-full"
