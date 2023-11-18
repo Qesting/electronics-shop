@@ -103,8 +103,7 @@
         >
             <aside
                 v-show="filterSidebarExpanded"
-                class="fixed bottom-0 left-0 w-0 h-screen bg-white z-30 overflow-hidden transition-[width] duration-300 lg:w-min-1/5 lg:!w-1/5 lg:!block lg:float-left lg:h-auto lg:sticky"
-                :style="`top: ${navHeight}px;`"
+                class="fixed bottom-0 left-0 w-0 top-0 h-screen bg-white z-30 overflow-hidden transition-[width] duration-300 lg:w-min-1/5 lg:!w-1/5 lg:!block lg:float-left lg:h-auto lg:relative"
             >
                 <h2
                     class="text-3xl capitalize text-center mb-4 py-8 font-bold relative w-screen lg:w-full"
