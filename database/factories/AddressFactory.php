@@ -16,7 +16,7 @@ class AddressFactory extends Factory
      *
      * @return array<string, mixed>
      */
-    protected $model = \App\models\Address::class;
+
     public function definition(): array
 
 
