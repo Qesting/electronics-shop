@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Customer extends Model
 {
+    protected $guarded = [];
+
     /**
      * Get the address that owns the Customer
      *

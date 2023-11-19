@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class PageHelperController extends Controller
 {
@@ -157,5 +158,40 @@ class PageHelperController extends Controller
         ]);
         $products->each(fn (Product $product) => $product->quantity = $productList[$product->id]);
         return $products;
+    }
+
+    public static function paymentMethods(): Collection
+    {
+        return \App\Models\PaymentMethod::all();
+    }
+
+    public static function shippingMethods(): Collection
+    {
+        return \App\Models\ShippingMethod::with(['shipper'])->get();
+    }
+
+    public static function customerData(Request $request): \App\Models\Customer
+    {
+        return Auth::check()
+            ? Auth::user()->customer()->with(['address'])
+            : (
+                $request->session()->has('customer')
+                    ? $request->session()->get('customer')
+                    : new \App\Models\Customer()
+            );
+    }
+
+    public static function arrayToCamelCase(iterable $array): array
+    {
+        $returnValue = [];
+
+        foreach ($array as $key => $value) {
+            $returnValue[
+                \Illuminate\Support\Str::camel($key)
+            ] = is_array($value)
+                ? self::arrayToCamelCase($value)
+                : $value;
+        };
+        return $returnValue;
     }
 }

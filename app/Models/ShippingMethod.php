@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class ShippingMethods extends Model
+class ShippingMethod extends Model
 {
     /**
      * Get the shipper that owns the ShippingMethods
