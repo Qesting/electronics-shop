@@ -49,13 +49,33 @@ Route::put(
 );
 
 Route::get(
-    '/cart/checkout',
-    [PageController::class, 'checkoutPage']
+    '/cart/shippingAndPayment',
+    [PageController::class, 'shippingAndPaymentPage']
 );
 
 Route::post(
     '/cart/checkout',
-    [PageController::class, 'endCheckoutPage']
+    [CartController::class, 'saveShippingData']
 );
+
+Route::get(
+    '/cart/checkout',
+    [PageController::class, 'checkoutPage']
+);
+
+Route::get(
+    '/cart/order',
+    [CartController::class, 'order']
+);
+
+Route::get(
+    'cart/order/done',
+    [PageController::class, 'orderedPage']
+);
+
+Route::get(
+    'sale/{saleId}',
+    [PageController::class, 'salePage']
+)->whereNumber('saleId');
 
 Route::get('/', [PageController::class, 'indexPage']);

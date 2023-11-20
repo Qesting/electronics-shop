@@ -231,12 +231,12 @@ return new class extends Migration
             $table->id();
 
             $table->decimal('total', 9, 2);
-            $table->foreignId('discount_code_id');
+            $table->foreignId('discount_code_id')->nullable();
 
             $table->foreignId('customer_id')->constrained();
             $table->foreignId('payment_method_id')->constrained();
             $table->foreignId('shipping_method_id')->constrained();
-            $table->boolean('completed');
+            $table->boolean('completed')->default(false);
 
             $table->timestamps();
         });
@@ -244,7 +244,8 @@ return new class extends Migration
         Schema::create('order_product', function (Blueprint $table) {
             $table->foreignId('order_id')->constrained();
             $table->foreignId('product_id')->constrained();
-            $table->boolean('reaturned');
+            $table->unsignedInteger('quantity')->default(1);
+            $table->boolean('returned')->default(false);
         });
     }
 

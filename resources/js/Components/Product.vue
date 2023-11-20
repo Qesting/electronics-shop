@@ -13,6 +13,11 @@ import Helper from '../Helper';
         productId: props.product.id,
         count: 1
     });
+
+    const salePrice =
+        props.product?.pivot?.price ??
+        props.product?.sales[0]?.pivot?.price ??
+        null;
 </script>
 
 <template>
@@ -29,7 +34,24 @@ import Helper from '../Helper';
             class="underline transition-colors duration-300 hover:text-red-700 capitalize"
         >{{ product.name }}</Link>
         <div class="mt-auto mb-0 flex flex-col items-center">
-            <span><i>{{ product.manufacturer.name }}</i>, {{ Helper.localeCurrencyString(product.price) }}</span>
+            <span><i>{{ product.manufacturer.name }}</i></span>
+            <p
+                v-if="salePrice == null"
+                class="font-bold"
+            >
+                {{ Helper.localeCurrencyString(product.price) }}
+            </p>
+            <p
+                v-else
+                class="font-bold"
+            >
+                <span class="line-through font-normal">
+                    {{ Helper.localeCurrencyString(product.price) }}
+                </span>&nbsp;
+                <span>
+                    {{ Helper.localeCurrencyString(+salePrice) }}
+                </span>
+            </p>
             <button
                 :disabled="cart.processing"
                 @click="cart.put('/cart/add', { preserveState: true, preserveScroll: true })"

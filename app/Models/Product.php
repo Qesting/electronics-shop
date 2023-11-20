@@ -15,6 +15,12 @@ class Product extends Model
     use HasFactory;
     use SoftDeletes;
 
+    protected $appends = ['rating'];
+    public function getRatingAttribute()
+    {
+        return $this->reviews()->avg('rating');
+    }
+
     /**
      * Get the manufacturer that owns the Product
      *

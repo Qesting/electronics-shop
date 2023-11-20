@@ -20,6 +20,11 @@ export default class Helper {
         );
     }
 
+    static localeDateString(date) {
+        const that = date instanceof Date ? date : new Date(date);
+        return that.toLocaleDateString(this.locale());
+    }
+
     static capitalize(string) {
         return string
             .split(/\s+/)
