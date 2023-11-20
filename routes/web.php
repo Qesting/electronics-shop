@@ -48,4 +48,14 @@ Route::put(
     [CartController::class, 'update']
 );
 
+Route::get(
+    '/cart/checkout',
+    [PageController::class, 'checkoutPage']
+);
+
+Route::post(
+    '/cart/checkout',
+    [PageController::class, 'endCheckoutPage']
+);
+
 Route::get('/', [PageController::class, 'indexPage']);

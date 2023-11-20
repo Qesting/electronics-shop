@@ -12,7 +12,10 @@ export default {
             },
             backgroundImage: {
                 'hero-pattern': 'url("https://mowic.pl/wp-content/uploads/2018/07/Mak%C5%82owicz-1024x691.jpg")'
-            }
+            },
+            colors: {
+                current: 'currentColor'
+            },
         },
     },
     plugins: [],

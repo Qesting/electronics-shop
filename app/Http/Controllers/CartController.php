@@ -59,7 +59,7 @@ class CartController extends Controller
         }
     }
 
-    public function code(Request $request): ?int
+    public static function code(Request $request): ?int
     {
         $valid = $request->validate([
             'code' => [
@@ -82,5 +82,104 @@ class CartController extends Controller
             $fake->discount = 0;
             return $fake;
         })->value('discount');
+    }
+
+    public static function saveShippingData(Request $request): \Illuminate\Support\Collection
+    {
+        $valid = $request->validate([
+            'shippingData.firstName' => [
+                'required',
+                'string'
+            ],
+            'shippingData.lastName' => [
+                'required',
+                'string'
+            ],
+            'shippingData.emailAddress' => [
+                'required',
+                'email'
+            ],
+            'shippingData.phoneNumber' => [
+                'nullable',
+                'numeric'
+            ],
+            'shippingData.address.country' => [
+                'required',
+                'string'
+            ],
+            'shippingData.address.city' => [
+                'required',
+                'string'
+            ],
+            'shippingData.address.postalCode' => [
+                'required',
+                'regex:/^\d{2}-\d{3}$/'
+            ],
+            'shippingData.address.street' => [
+                'required',
+                'string'
+            ],
+            'shippingData.address.building' => [
+                'required',
+                'numeric'
+            ],
+            'shippingData.address.apartment' => [
+                'nullable',
+                'numeric'
+            ],
+            'shippingMethod' => [
+                'required',
+                'numeric',
+                'exists:shipping_methods,id'
+            ],
+            'paymentMethod' => [
+                'required',
+                'numeric',
+                'exists:payment_methods,id'
+            ]
+        ]);
+
+        [
+            'shippingData' => [
+                'firstName' => $firstName,
+                'lastName' => $lastName,
+                'emailAddress' => $emailAddress,
+                'address' => $address
+            ],
+            'shippingMethod' => $shippingMethod,
+            'paymentMethod' => $paymentMethod
+        ] = $valid;
+        $phoneNumber = $valid['phoneNumber'] ?? null;
+
+        $transformedAddress = [];
+        foreach ($address as $key => $item) {
+            $transformedAddress[Str::snake($key)] = $item;
+        }
+        $transformedCustomer = [
+            'first_name' => $firstName,
+            'last_name' => $lastName,
+            'email_address' => $emailAddress,
+            'phone_number' => $phoneNumber
+        ];
+
+        $currentCustomer = PageHelperController::customerData($request);
+        if (
+            \Illuminate\Support\Facades\Auth::check() ||
+            $request->session()->has('customer')
+        ) {
+            $currentAddress = $currentCustomer->address;
+            $currentAddress->update($transformedAddress);
+            $currentCustomer->update($transformedCustomer);
+        } else {
+            $currentCustomer = new \App\Models\Customer($transformedCustomer);
+            $currentAddress = \App\Models\Address::create($transformedAddress);
+            $currentCustomer->address()->associate($currentAddress)->save();
+            $request->session()->put('customer', $currentCustomer);
+        }
+
+        return collect([
+            'shippingMethod' => \App\Models\ShippingMethod::with('shipper')->findOrFail($shippingMethod),
+            'paymentMethod' => \App\Models\PaymentMethod::findOrFail($paymentMethod)
+        ]);
     }
 }

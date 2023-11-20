@@ -66,17 +66,17 @@
                         <button
                             v-if="edit"
                             @click="edit = !edit"
-                            class="py-2 px-4 bg-red-700 text-white rounded-lg font-bold hover:bg-red-800 transition-colors duration-300"
+                            class="py-2 px-4 bg-red-700 text-white rounded-lg hover:bg-red-800 transition-colors duration-300"
                         ><span class="bi-save"></span> Zapisz</button>
                         <button
                             v-else
                             @click="edit = !edit"
-                            class="py-2 px-4 bg-red-700 text-white rounded-lg font-bold hover:bg-red-800 transition-colors duration-300"
+                            class="py-2 px-4 bg-red-700 text-white rounded-lg hover:bg-red-800 transition-colors duration-300"
                         ><span class="bi-pencil"></span> Edytuj</button>
                         <button
                             v-if="edit"
                             @click="quantities.reset()"
-                            class="ml-4 py-2 px-4 bg-gray-800 text-white rounded-lg font-bold hover:bg-gray-900 transition-colors duration-300"
+                            class="ml-4 py-2 px-4 bg-gray-800 text-white rounded-lg hover:bg-gray-900 transition-colors duration-300"
                         ><span class="bi-arrow-clockwise"></span> Cofnij</button>
                     </div>
                     <div

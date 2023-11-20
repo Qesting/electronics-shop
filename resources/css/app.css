@@ -11,4 +11,12 @@
     color: rgb(185 28 28 / var(--tw-bg-opacity));
 }
 
+input:not(:is([type="checkbox"], [type="radio"])) {
+    @apply transition-colors;
+    @apply duration-300;
+}
 
+input:not(:is([type="checkbox"], [type="radio"])):focus {
+    outline: none !important;
+    @apply border-red-700;
+}

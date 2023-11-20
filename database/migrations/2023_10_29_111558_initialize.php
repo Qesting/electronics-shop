@@ -15,11 +15,9 @@ return new class extends Migration
             $table->id();
 
             $table->string('country', 20);
-            $table->string('province', 20);
-            $table->string('county', 20);
             $table->string('city', 30);
             $table->char('postal_code', 6);
-            $table->string('street', 40);
+            $table->string('street', 40)->nullable();
             $table->unsignedSmallInteger('building');
             $table->unsignedSmallInteger('apartment')->nullable();
 
