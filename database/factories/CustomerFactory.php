@@ -24,7 +24,7 @@ class CustomerFactory extends Factory
         return [
             'first_name'=>Str::random(10),
             'last_name'=>Str::random(10),
-            'address_id'=>rand(1,100),
+            //'address_id'=>rand(1,100),
             'email_address'=>Str::random(15)."@".Str::random(10),
             'phone_number'=>Str::random(15),
 
