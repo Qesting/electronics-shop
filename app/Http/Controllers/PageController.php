@@ -188,4 +188,43 @@ class PageController extends Controller
             ]
         );
     }
+
+    public function loginPage(): \Inertia\Response | \Illuminate\Http\RedirectResponse
+    {
+        if (Auth::check()) {
+            return redirect('user/dashboard');
+        }
+
+        return Inertia::render(
+            'Login',
+            [
+                'categories' => PageHelperController::categories()
+            ]
+        );
+    }
+
+    public function registerPage(): \Inertia\Response | \Illuminate\Http\RedirectResponse
+    {
+        if (Auth::check()) {
+            return redirect('user/dashboard');
+        }
+
+        return Inertia::render(
+            'Register',
+            [
+                'categories' => PageHelperController::categories()
+            ]
+        );
+    }
+
+    public function dashboardPage(): Response
+    {
+        return Inertia::render(
+            'Dashboard',
+            [
+                'categories' => PageHelperController::categories(),
+                'orders' => Auth::user()->orders
+            ]
+        );
+    }
 }

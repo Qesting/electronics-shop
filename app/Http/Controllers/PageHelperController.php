@@ -177,7 +177,7 @@ class PageHelperController extends Controller
     public static function customerData(Request $request): \App\Models\Customer
     {
         return Auth::check()
-            ? Auth::user()->customer()->with(['address'])
+            ? Auth::user()->customer()->with(['address'])->first()
             : $request->session()->get('customer', new \App\Models\Customer);
     }
 

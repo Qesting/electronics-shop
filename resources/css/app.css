@@ -20,3 +20,9 @@ input:not(:is([type="checkbox"], [type="radio"])):focus {
     outline: none !important;
     @apply border-red-700;
 }
+
+.error-msg {
+    @apply block;
+    @apply text-red-700;
+    @apply text-center;
+}

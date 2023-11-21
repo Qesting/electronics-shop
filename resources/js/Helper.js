@@ -31,4 +31,27 @@ export default class Helper {
             .map(word => word[0].toUpperCase() + word.substring(1))
             .join(' ');
     }
+
+    static unflatten(object) {
+        return Object.keys(object).reduce((accumulator, key) => {
+            if (key.indexOf('.') + 1) {
+                const keys = key.split('.');
+                Object.assign(
+                    accumulator,
+                    JSON.parse(
+                        '{' +
+                        keys.map(
+                            (value, index) => (
+                                index !== keys.length -1
+                                ? `"${value}":{`
+                                : `"${value}":`
+                            )).join('') + object[key]
+                        + '}'.repeat(keys.length)
+                    )
+                );
+            } else {
+                accumulator[key] = object[key];
+            }
+        }, {});
+    }
 }

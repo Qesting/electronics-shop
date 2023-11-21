@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -77,5 +78,30 @@ Route::get(
     'sale/{saleId}',
     [PageController::class, 'salePage']
 )->whereNumber('saleId');
+
+Route::get(
+    'user/login',
+    [PageController::class, 'loginPage']
+);
+
+Route::post(
+    'user/login',
+    [UserController::class, 'login']
+);
+
+Route::get(
+    'user/register',
+    [PageController::class, 'registerPage']
+);
+
+Route::post(
+    'user/register',
+    [UserController::class, 'register']
+);
+
+Route::get(
+    'user/dashboard',
+    [PageController::class, 'dashboardPage']
+);
 
 Route::get('/', [PageController::class, 'indexPage']);

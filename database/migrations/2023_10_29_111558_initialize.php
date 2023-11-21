@@ -14,11 +14,11 @@ return new class extends Migration
         Schema::create('addresses', function (Blueprint $table) {
             $table->id();
 
-            $table->string('country', 20);
-            $table->string('city', 30);
-            $table->char('postal_code', 6);
+            $table->string('country', 20)->nullable();
+            $table->string('city', 30)->nullable();
+            $table->char('postal_code', 6)->nullable();
             $table->string('street', 40)->nullable();
-            $table->unsignedSmallInteger('building');
+            $table->unsignedSmallInteger('building')->nullable();
             $table->unsignedSmallInteger('apartment')->nullable();
 
             $table->timestamps();
@@ -41,7 +41,7 @@ return new class extends Migration
         });
 
         Schema::create('employees', function (Blueprint $table) {
-           $table->id();
+            $table->id();
 
             $table->foreignId('department_id')->constrained();
             $table->foreignId('job_title_id')->constrained();
@@ -61,30 +61,33 @@ return new class extends Migration
         });
 
         Schema::create('customers', function (Blueprint $table) {
-           $table->id();
+            $table->id();
 
-            $table->string('first_name', 30);
-            $table->string('last_name', 30);
+            $table->string('first_name', 30)->nullable();
+            $table->string('last_name', 30)->nullable();
 
             $table->foreignId('address_id')->constrained();
-            $table->string('email_address', 50);
+            $table->string('email_address', 50)->nullable();
             $table->string('phone_number', 20)->nullable();
 
             $table->timestamps();
         });
 
         Schema::create('users', function (Blueprint $table) {
-           $table->id();
+            $table->id();
 
-            $table->foreignId('customer_id')->constrained();
-            $table->string('password_hash', 255);
+            $table->string('email_address', 40);
+            $table->string('password', 255);
             $table->char('remember_token', 100)->nullable();
+            $table->foreignId('customer_id')->constrained();
 
             $table->timestamps();
+
+            $table->unique('email_address');
         });
 
         Schema::create('categories', function (Blueprint $table) {
-           $table->id();
+            $table->id();
 
             $table->string('name', 40);
             $table->string('code', 10);
@@ -95,7 +98,7 @@ return new class extends Migration
         });
 
         Schema::create('manufacturers', function (Blueprint $table) {
-           $table->id();
+            $table->id();
 
             $table->string('name', 40);
             $table->foreignId('address_id')->constrained();
@@ -105,7 +108,7 @@ return new class extends Migration
         });
 
         Schema::create('suppliers', function (Blueprint $table) {
-           $table->id();
+            $table->id();
 
             $table->string('name', 40);
             $table->foreignId('address_id')->constrained();
@@ -128,7 +131,7 @@ return new class extends Migration
         // [x] add product reviews
 
         Schema::create('products', function (Blueprint $table) {
-           $table->id();
+            $table->id();
 
             $table->string('name', 100);
             $table->foreignId('manufacturer_id')->constrained();
@@ -143,7 +146,7 @@ return new class extends Migration
         });
 
         Schema::create('product_reviews', function (Blueprint $table) {
-           $table->id();
+            $table->id();
 
             $table->foreignId('user_id')->constrained();
             $table->foreignId('product_id')->constrained();
@@ -154,7 +157,7 @@ return new class extends Migration
         });
 
         Schema::create('discount_codes', function (Blueprint $table) {
-           $table->id();
+            $table->id();
 
             $table->string('code', 10);
             $table->unsignedTinyInteger('discount');
@@ -165,7 +168,7 @@ return new class extends Migration
         });
 
         Schema::create('sales', function (Blueprint $table) {
-           $table->id();
+            $table->id();
 
             $table->string('name', 40);
             $table->text('description');
@@ -182,7 +185,7 @@ return new class extends Migration
         });
 
         Schema::create('deliveries', function (Blueprint $table) {
-           $table->id();
+            $table->id();
 
             $table->foreignId('supplier_id')->constrained();
 
@@ -198,7 +201,7 @@ return new class extends Migration
         // [x] payment methods, shipping methods, shippers
 
         Schema::create('payment_methods', function (Blueprint $table) {
-           $table->id();
+            $table->id();
 
             $table->string('name', 40);
 
@@ -206,7 +209,7 @@ return new class extends Migration
         });
 
         Schema::create('shippers', function (Blueprint $table) {
-            $table->id();
+             $table->id();
 
             $table->string('name', 40);
             $table->char('eu_tax_id', 12);
@@ -215,7 +218,7 @@ return new class extends Migration
         });
 
         Schema::create('shipping_methods', function (Blueprint $table) {
-           $table->id();
+            $table->id();
 
             $table->string('name', 40);
             $table->foreignId('shipper_id')->constrained();
@@ -228,7 +231,7 @@ return new class extends Migration
         });
 
         Schema::create('orders', function (Blueprint $table) {
-            $table->id();
+             $table->id();
 
             $table->decimal('total', 9, 2);
             $table->foreignId('discount_code_id')->nullable();

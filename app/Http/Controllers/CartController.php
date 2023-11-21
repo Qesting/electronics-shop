@@ -112,11 +112,20 @@ class CartController extends Controller
     public static function order(
         \Illuminate\Http\Request $request
     ): \Illuminate\Http\RedirectResponse {
-        if (!$request->session()->has(['cart', 'customer', 'orderMethods'])) {
+        if (
+            !$request->session()->has(['cart', 'orderMethods']) &&
+            (
+                !$request->session()->has('customer') ||
+                !\Illuminate\Support\Facades\Auth::check()
+            )
+        ) {
             return redirect()->action([PageController::class, 'cartPage']);
         }
 
-        $customer = $request->session()->get('customer');
+        $customer = $request->session()->get(
+            'customer',
+            \Illuminate\Support\Facades\Auth::user()->customer
+        );
         $discountCode = $request->session()->get('discountCode', new \App\Models\DiscountCode());
         $products = PageHelperController::cartItems($request);
         $totalPrice = $products

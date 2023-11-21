@@ -69,12 +69,17 @@
                 class="bi-house-fill text-2xl text-center inline-block box-border w-10 h-10 p-0.5 rounded-lg hover:bg-red-800 transition-colors duration-300"
                 aria-label="strona główna"
             ></Link>
+            <h1 class="grow text-center text-3xl capitalize font-bold">ars insolitam</h1>
             <Link
                 href="/cart"
                 class="bi-cart-fill text-2xl text-center inline-block box-border w-10 h-10 p-0.5 rounded-lg hover:bg-red-800 transition-colors duration-300"
                 aria-label="koszyk"
             ></Link>
-            <h1 class="grow text-center text-3xl capitalize font-bold">ars insolitam</h1>
+            <Link
+                href="/user/login"
+                class="bi-person-circle text-2xl text-center inline-block box-border w-10 h-10 p-0.5 rounded-lg hover:bg-red-800 transition-colors duration-300"
+                aria-label="logowanie"
+            ></Link>
         </div>
         <Transition
             name="expand"

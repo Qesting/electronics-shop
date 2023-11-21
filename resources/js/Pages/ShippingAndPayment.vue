@@ -1,8 +1,9 @@
 <script setup>
 
-    import { ref } from 'vue';
+    import { ref, watch } from 'vue';
     import { Head, useForm, Link } from '@inertiajs/vue3';
     import Helper from '../Helper';
+    import { unflatten } from 'flat';
 
     import Layout from "../Components/Layout.vue";
     import Section from '../Components/Section.vue';
@@ -14,7 +15,8 @@
         shippingMethods: Array,
         paymentMethods: Array,
         customerData: Object,
-        orderMethods: Object
+        orderMethods: Object,
+        errors: Object
     });
 
     const loggedInScreen = ref(
@@ -29,6 +31,12 @@
         shippingMethod: props.orderMethods?.shippingMethod?.id,
         paymentMethod: props.orderMethods?.paymentMethod?.id
     });
+
+    let unflattenedErrors;
+    watch(props, () => {
+        unflattenedErrors = unflatten(props.errors);
+    });
+
 </script>
 
 <template>
@@ -81,103 +89,144 @@
                         >
                             <label
                                 for="first-name"
+                                class="self-end pb-1"
                             >Imię<span class="text-red-700">*</span></label>
-                            <input
-                                class="p-1 border border-current rounded-lg"
-                                id="first-name"
-                                type="text"
-                                v-model="checkoutForm.shippingData.firstName"
-                            />
+                            <div class="w-full">
+                                <span class="error-msg !text-left" v-if="unflattenedErrors?.shippingData?.firstName">{{ unflattenedErrors?.shippingData?.firstName }}</span>
+                                <input
+                                    class="p-1 border border-current rounded-lg w-full"
+                                    id="first-name"
+                                    type="text"
+                                    v-model="checkoutForm.shippingData.firstName"
+                                />
+                            </div>
                             <label
                                 for="last-name"
+                                class="self-end pb-1"
                             >Nazwisko<span class="text-red-700">*</span></label>
-                            <input
-                                class="p-1 border border-current rounded-lg"
-                                id="last-name"
-                                type="text"
-                                v-model="checkoutForm.shippingData.lastName"
-                            />
+                            <div class="w-full">
+                                <span class="error-msg !text-left" v-if="unflattenedErrors?.shippingData?.lastName">{{ unflattenedErrors?.shippingData?.lastName }}</span>
+                                <input
+                                    class="p-1 border border-current rounded-lg w-full"
+                                    id="last-name"
+                                    type="text"
+                                    v-model="checkoutForm.shippingData.lastName"
+                                />
+                            </div>
                             <label
                                 for="email-address"
+                                class="self-end pb-1"
                             >Adres e-mail<span class="text-red-700">*</span></label>
-                            <input
-                                class="p-1 border border-current rounded-lg"
-                                id="email-address"
-                                type="email"
-                                v-model="checkoutForm.shippingData.emailAddress"
-                            />
+                            <div class="w-full">
+                                <span class="error-msg !text-left" v-if="unflattenedErrors?.shippingData?.emailAddress">{{ unflattenedErrors?.shippingData?.emailAddress}}</span>
+                                <input
+                                    class="p-1 border border-current rounded-lg w-full"
+                                    id="email-address"
+                                    type="email"
+                                    v-model="checkoutForm.shippingData.emailAddress"
+                                />
+                            </div>
                             <label
                                 for="phone-number"
+                                class="self-end pb-1"
                             >Numer telefonu</label>
-                            <input
-                                class="p-1 border border-current rounded-lg"
-                                id="phone-number"
-                                type="tel"
-                                v-model="checkoutForm.shippingData.phoneNumber"
-                            />
+                            <div class="w-full">
+                                <span class="error-msg !text-left" v-if="unflattenedErrors?.shippingData?.phoneNumber">{{ unflattenedErrors?.shippingData?.phoneNumber }}</span>
+                                <input
+                                    class="p-1 border border-current rounded-lg w-full"
+                                    id="phone-number"
+                                    type="tel"
+                                    v-model="checkoutForm.shippingData.phoneNumber"
+                                />
+                            </div>
 
                             <label
                                 for="country"
+                                class="self-end pb-1"
                             >Państwo<span class="text-red-700">*</span></label>
-                            <input
-                                class="p-1 border border-current rounded-lg"
-                                id="country"
-                                type="text"
-                                v-model="checkoutForm.shippingData.address.country"
-                            />
+                            <div class="w-full">
+                                <span class="error-msg !text-left" v-if="unflattenedErrors?.shippingData?.address?.country">{{ unflattenedErrors?.shippingData?.address?.country }}</span>
+                                <input
+                                    class="p-1 border border-current rounded-lg w-full"
+                                    id="country"
+                                    type="text"
+                                    v-model="checkoutForm.shippingData.address.country"
+                                />
+                            </div>
                             <label
                                 for="city"
+                                class="self-end pb-1"
                             >Miasto<span class="text-red-700">*</span></label>
-                            <input
-                                class="p-1 border border-current rounded-lg"
-                                id="city"
-                                type="text"
-                                v-model="checkoutForm.shippingData.address.city"
-                            />
+                            <div class="w-full">
+                                <span class="error-msg !text-left" v-if="unflattenedErrors?.shippingData?.address?.city">{{ unflattenedErrors?.shippingData?.address?.city }}</span>
+                                <input
+                                    class="p-1 border border-current rounded-lg w-full"
+                                    id="city"
+                                    type="text"
+                                    v-model="checkoutForm.shippingData.address.city"
+                                />
+                            </div>
                             <label
                                 for="postal-code"
+                                class="self-end pb-1"
                             >Kod pocztowy<span class="text-red-700">*</span></label>
-                            <input
-                                class="p-1 border border-current rounded-lg"
-                                id="postal-code"
-                                type="text"
-                                v-model="checkoutForm.shippingData.address.postalCode"
-                            />
+                            <div class="w-full">
+                                <span class="error-msg !text-left" v-if="unflattenedErrors?.shippingData?.address?.postalCode">{{ unflattenedErrors?.shippingData?.address?.postalCode }}</span>
+                                <input
+                                    class="p-1 border border-current rounded-lg w-full"
+                                    id="postal-code"
+                                    type="text"
+                                    v-model="checkoutForm.shippingData.address.postalCode"
+                                />
+                            </div>
                             <label
                                 for="street"
+                                class="self-end pb-1"
                             >Ulica<span class="text-red-700">*</span></label>
-                            <input
-                                class="p-1 border border-current rounded-lg"
-                                id="street"
-                                type="text"
-                                v-model="checkoutForm.shippingData.address.street"
-                            />
+                            <div class="w-full">
+                                <span class="error-msg !text-left" v-if="unflattenedErrors?.shippingData?.address?.street">{{ unflattenedErrors?.shippingData?.address?.street }}</span>
+                                <input
+                                    class="p-1 border border-current rounded-lg w-full"
+                                    id="street"
+                                    type="text"
+                                    v-model="checkoutForm.shippingData.address.street"
+                                />
+                            </div>
                             <label
                                 for="building"
+                                class="self-end pb-1"
                             >Nr budynku<span class="text-red-700">*</span></label>
-                            <input
-                                class="p-1 border border-current rounded-lg"
-                                id="building"
-                                type="text"
-                                inputmode="numeric"
-                                v-model="checkoutForm.shippingData.address.building"
-                            />
+                            <div class="w-full">
+                                <span class="error-msg !text-left" v-if="unflattenedErrors?.shippingData?.address?.building">{{ unflattenedErrors?.shippingData?.address?.building }}</span>
+                                <input
+                                    class="p-1 border border-current rounded-lg w-full"
+                                    id="building"
+                                    type="text"
+                                    inputmode="numeric"
+                                    v-model="checkoutForm.shippingData.address.building"
+                                />
+                            </div>
                             <label
                                 for="apartment"
+                                class="self-end pb-1"
                             >Nr lokalu</label>
-                            <input
-                                class="p-1 border border-current rounded-lg"
-                                id="apartment"
-                                type="text"
-                                inputmode="numeric"
-                                v-model="checkoutForm.shippingData.address.apartment"
-                            />
+                            <div class="w-full">
+                                <span class="error-msg !text-left" v-if="unflattenedErrors?.shippingData?.address?.apartment">{{ unflattenedErrors?.shippingData?.address?.apartment }}</span>
+                                <input
+                                    class="p-1 border border-current rounded-lg w-full"
+                                    id="apartment"
+                                    type="text"
+                                    inputmode="numeric"
+                                    v-model="checkoutForm.shippingData.address.apartment"
+                                />
+                            </div>
                         </article>
                     </div>
                     <div class="w-full lg:w-1/3 flex flex-col items-center">
                         <h3
                             class="block text-xl font-bold my-4 text-center"
                         >Metoda Wysyłki</h3>
+                        <span class="error-msg" v-if="unflattenedErrors?.shippingMethod">{{ unflattenedErrors?.shippingMethod }}</span>
                         <article class="grid grid-cols-4 lg:grid-cols-2 gap-2 w-full">
                             <div
                                 v-for="method in shippingMethods"
@@ -193,6 +242,7 @@
                         <h3
                             class="block text-xl font-bold my-4 text-center"
                         >Metoda Płatności</h3>
+                        <span class="error-msg" v-if="unflattenedErrors?.paymentMethod">{{ unflattenedErrors?.paymentMethod }}</span>
                         <article class="grid grid-cols-4 lg:grid-cols-2 gap-2 w-full">
                             <div
                                 v-for="method in paymentMethods"
