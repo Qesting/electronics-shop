@@ -8,22 +8,23 @@
     import { watch } from 'vue';
     import { useForm } from '@inertiajs/vue3';
     import { Head, Link } from '@inertiajs/vue3';
+import { computed } from '@vue/reactivity';
 
     const props = defineProps({
         categories: Array,
         products: Array,
-        code: Number
+        discountCode: Object
     });
 
     const productQuantities = {};
     props.products.forEach(product => productQuantities[product.id] = {id: product.id, quantity: product.quantity});
     const quantities = useForm(productQuantities);
     const promoCode = useForm({
-        code: ''
+        code: props.discountCode?.code ?? ''
     })
 
     const edit = ref(false);
-    const showCodeInput = ref(false);
+    const showCodeInput = ref(props.discountCode?.code !== undefined);
 
     watch(edit, newEdit => {
         if (newEdit === false && quantities.isDirty) {
@@ -31,7 +32,8 @@
             .defaults()
             .put('/cart/update', {
                 preserveScroll: true,
-                preserveState: true
+                preserveState: true,
+                only: []
             });
         }
     });
@@ -41,15 +43,15 @@
             promoCode.post('/cart', {
                 preserveScroll: true,
                 preserveState: true,
-                only: ['code']
+                only: ['discountCode']
             });
         }
     };
 
-    const totalPrice = props.products
+    const totalPrice = computed(() => props.products
         .map(
-            product =>  product.price * quantities[product.id].quantity
-        ).reduce((accumulator, value) => accumulator + value, 0);
+            product =>  +(product?.sales[0]?.pivot?.price ?? product.price) * quantities[product.id].quantity
+        ).reduce((accumulator, value) => accumulator + value, 0));
 </script>
 
 <template>
@@ -90,7 +92,11 @@
                         <div class="flex-grow ml-4">
                             <h4 class="text-lg font-bold">{{ Helper.capitalize(product.name) }}</h4>
                             <span>{{ product.manufacturer.name }}</span>&nbsp;
-                            <span>{{ Helper.localeCurrencyString(product.price) }}</span>
+                            <span v-if="product?.sales[0]?.pivot?.price != null">
+                                <span class="line-through">{{ Helper.localeCurrencyString(product.price) }}</span>&nbsp;
+                                <span>{{ Helper.localeCurrencyString(+product?.sales[0]?.pivot?.price) }}</span>
+                            </span>
+                            <span v-else>{{ Helper.localeCurrencyString(product.price) }}</span>
                         </div>
                         <div
                             class="w-24"
@@ -105,7 +111,7 @@
                                 <button class="bi-trash " @click="quantities[product.id].quantity = 0"></button>
                             </template>
                             <span v-else>{{ quantities[product.id].quantity }}</span>
-                            <span class="block">{{ Helper.localeCurrencyString(product.price * quantities[product.id].quantity) }}</span>
+                            <span class="block">{{ Helper.localeCurrencyString(+(product?.sales[0]?.pivot?.price ?? product.price) * quantities[product.id].quantity) }}</span>
                         </div>
                     </div>
                 </div>
@@ -122,10 +128,17 @@
                             v-model="promoCode.code"
                             class="border border-black rounded-md p-1 my-2"
                         />
-                        <span v-if="promoCode.isDirty && code === 0" class="bi-x"></span>
+                        <span
+                            v-if="promoCode.code !== '' && discountCode?.discount === 0"
+                            class="text-red-700 ml-2"
+                        >Niewłaściwy kod</span>
+                        <span
+                            v-else-if="promoCode.code !== '' && discountCode?.discount !== 0"
+                            class="text-red-700 ml-2"
+                        >&minus;{{ discountCode.discount }}&percnt;</span>
                     </div>
                     <p
-                        v-if="code === null || code === 0"
+                        v-if="discountCode === null || discountCode?.discount === 0"
                         class="text-xl font-bold"
                     >
                         {{ Helper.localeCurrencyString(totalPrice) }}
@@ -138,11 +151,12 @@
                             {{ Helper.localeCurrencyString(totalPrice) }}
                         </span>&nbsp;
                         <span>
-                            {{ Helper.localeCurrencyString(totalPrice * (1 - (code / 100))) }}
+                            {{ Helper.localeCurrencyString(totalPrice * (1 - (discountCode?.discount / 100))) }}
                         </span>
                     </p>
                     <Link
-                        href="/cart/checkout"
+                        v-if="products.length"
+                        href="/cart/shippingAndPayment"
                         class="inline-block py-2 px-4 bg-red-700 text-white rounded-lg font-bold hover:bg-red-800 transition-colors duration-300"
                     >Przejdź do zamówienia</Link>
                 </div>

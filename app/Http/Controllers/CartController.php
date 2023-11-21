@@ -3,28 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Models\DiscountCode;
-use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
 class CartController extends Controller
 {
-    public function add(Request $request): void
+    public function add(\App\Http\Requests\AddToCartRequest $request): void
     {
         [
             'productId' => $productId,
             'count' => $count
-        ] = $request->validate([
-            'productId' => [
-                'required',
-                'numeric',
-                'exists:products,id',
-            ],
-            'count' => [
-                'required',
-                'numeric',
-                'gt:0'
-            ]
-        ]);
+        ] = $request->validated();
         if ($request->session()->has("cart.{$productId}")) {
             $request->session()->increment("cart.{$productId}", $count);
         } else {
@@ -32,20 +20,9 @@ class CartController extends Controller
         }
     }
 
-    public function update(Request $request): void
+    public function update(\App\Http\Requests\UpdateCartRequest $request): void
     {
-        $valid = $request->validate([
-            '*.id' => [
-                'required',
-                'numeric',
-                'exists:products,id'
-            ],
-            '*.quantity' => [
-                'required',
-                'numeric',
-                'gte:0'
-            ]
-        ]);
+        $valid = $request->validated();
 
         foreach($valid as [
             'id' => $productId,
@@ -59,86 +36,33 @@ class CartController extends Controller
         }
     }
 
-    public static function code(Request $request): ?int
-    {
-        $valid = $request->validate([
-            'code' => [
-                'nullable',
-                'string',
-                'max:10'
-            ]
-        ]);
+    public static function code(
+        \App\Http\Requests\DiscountCodeRequest $request
+    ): DiscountCode {
+        $valid = $request->validated();
 
         if (
-            !isset($valid['code']) ||
-            is_null($valid['code']) ||
-            Str::length($valid['code']) === 0
+            Str::length($valid['code'] ?? '') === 0 &&
+            $request->session()->has('discountCode')
         ) {
-            return null;
+            return $request->session()->get('discountCode');
         }
 
-        return DiscountCode::where('code', $valid['code'])->firstOr(function() {
+        $discountCode = DiscountCode::where('code', $valid['code'] ?? -1)->firstOr(function() {
             $fake = new DiscountCode();
             $fake->discount = 0;
             return $fake;
-        })->value('discount');
+        });
+        $request->session()->put('discountCode', $discountCode);
+        return $discountCode;
     }
 
-    public static function saveShippingData(Request $request): \Illuminate\Support\Collection
-    {
-        $valid = $request->validate([
-            'shippingData.firstName' => [
-                'required',
-                'string'
-            ],
-            'shippingData.lastName' => [
-                'required',
-                'string'
-            ],
-            'shippingData.emailAddress' => [
-                'required',
-                'email'
-            ],
-            'shippingData.phoneNumber' => [
-                'nullable',
-                'numeric'
-            ],
-            'shippingData.address.country' => [
-                'required',
-                'string'
-            ],
-            'shippingData.address.city' => [
-                'required',
-                'string'
-            ],
-            'shippingData.address.postalCode' => [
-                'required',
-                'regex:/^\d{2}-\d{3}$/'
-            ],
-            'shippingData.address.street' => [
-                'required',
-                'string'
-            ],
-            'shippingData.address.building' => [
-                'required',
-                'numeric'
-            ],
-            'shippingData.address.apartment' => [
-                'nullable',
-                'numeric'
-            ],
-            'shippingMethod' => [
-                'required',
-                'numeric',
-                'exists:shipping_methods,id'
-            ],
-            'paymentMethod' => [
-                'required',
-                'numeric',
-                'exists:payment_methods,id'
-            ]
-        ]);
-
+    public static function saveShippingData(
+        \App\Http\Requests\ShippingDataRequest $request
+    ): \Illuminate\Http\RedirectResponse {
+        if (!$request->session()->has('cart')) {
+            return redirect()->action([PageController::class, 'cartPage']);
+        }
         [
             'shippingData' => [
                 'firstName' => $firstName,
@@ -148,7 +72,7 @@ class CartController extends Controller
             ],
             'shippingMethod' => $shippingMethod,
             'paymentMethod' => $paymentMethod
-        ] = $valid;
+        ] = $request->validated();
         $phoneNumber = $valid['phoneNumber'] ?? null;
 
         $transformedAddress = [];
@@ -177,9 +101,74 @@ class CartController extends Controller
             $request->session()->put('customer', $currentCustomer);
         }
 
-        return collect([
+        $request->session()->put('orderMethods', [
             'shippingMethod' => \App\Models\ShippingMethod::with('shipper')->findOrFail($shippingMethod),
             'paymentMethod' => \App\Models\PaymentMethod::findOrFail($paymentMethod)
         ]);
+
+        return redirect()->action([PageController::class, 'checkoutPage']);
+    }
+
+    public static function order(
+        \Illuminate\Http\Request $request
+    ): \Illuminate\Http\RedirectResponse {
+        if (
+            !$request->session()->has(['cart', 'orderMethods']) &&
+            (
+                !$request->session()->has('customer') ||
+                !\Illuminate\Support\Facades\Auth::check()
+            )
+        ) {
+            return redirect()->action([PageController::class, 'cartPage']);
+        }
+
+        $customer = $request->session()->get(
+            'customer',
+            \Illuminate\Support\Facades\Auth::user()->customer
+        );
+        $discountCode = $request->session()->get('discountCode', new \App\Models\DiscountCode());
+        $products = PageHelperController::cartItems($request);
+        $totalPrice = $products
+            ->sum(fn ($product) =>  (float) ($product?->sales[0]?->pivot?->price ?? $product->price) * $product->quantity)
+            * (1 - ($discountCode->discount / 100));
+        [
+            'shippingMethod' => $shippingMethod,
+            'paymentMethod' => $paymentMethod
+        ] = $request->session()->get('orderMethods');
+
+        $order = new \App\Models\Order();
+        $order->total = $totalPrice;
+        $order->customer()->associate($customer);
+        if ($discountCode->discount != 0) {
+            $order->discountCode()->associate($discountCode);
+        }
+        $order->shippingMethod()->associate($shippingMethod);
+        $order->paymentMethod()->associate($paymentMethod);
+        $order->save();
+
+        $productsToAttach = new \Illuminate\Support\Collection();
+        $products->each(function ($product) use ($productsToAttach) {
+            $productsToAttach->put(
+                $product->id,
+                ['quantity' => $product->quantity]
+            );
+        });
+
+        info([$products, $productsToAttach]);
+
+        $order->products()->sync($productsToAttach);
+        $products->each(function ($product) {
+            $product->number_in_stock -= $product->quantity;
+            unset($product->quantity);
+            $product->save();
+        });
+
+        $request->session()->forget([
+            'discountCode',
+            'cart',
+            'orderMethods'
+        ]);
+
+        return redirect()->action([PageController::class, 'orderedPage']);
     }
 }

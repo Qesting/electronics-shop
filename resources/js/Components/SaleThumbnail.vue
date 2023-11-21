@@ -25,6 +25,6 @@
             :href="'/sale/' + sale.id"
             class="underline transition-colors duration-300 hover:text-red-700 capitalize"
         >{{ sale.name }}</Link>
-        <span><i>Tylko do {{ sale.expires_at }}</i></span>
+        <span><i>Tylko do {{ Helper.localeDateString(sale.expires_at) }}</i></span>
     </div>
 </template>

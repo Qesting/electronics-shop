@@ -1,6 +1,7 @@
 <script setup>
     import Layout from '../Components/Layout.vue';
     import Section from '../Components/Section.vue';
+    import Helper from '../Helper';
     import { Head, Link, useForm } from '@inertiajs/vue3';
     import { ref } from 'vue';
 
@@ -9,24 +10,22 @@
         product: Object
     });
 
-    const capitalize = string => string.split(/\s+/).map(word => word[0].toUpperCase() + word.substring(1)).join(' ');
-    const imageSrc = image => image ? image.origin + image.name : '';
-
     const selectedImage = ref(props.product.images[0]);
     const form = useForm({
         productId: props.product.id,
         count: 1
     });
 
-    const locale =  navigator.languages && navigator.languages.length
-        ? navigator.languages[0]
-        : navigator.language;
+    const salePrice =
+        props.product?.pivot?.price ??
+        props.product?.sales[0]?.pivot?.price ??
+        null;
 </script>
 
 <template>
     <Layout :categories="categories">
         <Head>
-        <title>{{ capitalize(product.name) }} | Ars Insolitam</title>
+        <title>{{ Helper.capitalize(product.name) }} | Ars Insolitam</title>
         <meta name="description" :content="product.name + ' w Ars Insolitam.'"/>
     </Head>
     <main>
@@ -34,11 +33,11 @@
             class="capitalize ml-8 hover:underline"
             :href="`/category/${product.category.id}`"
         ><span class="bi-arrow-left"></span> {{ product.category.name }}</Link>
-        <Section class="flex justify-between px-8 mx-auto lg:w-4/5 py-4" :name="capitalize(product.name)">
+        <Section class="flex justify-between px-8 mx-auto lg:w-4/5 py-4" :name="Helper.capitalize(product.name)">
             <article class="flex flex-row w-3/5">
                 <div class="w-4/5 p-2">
                     <img
-                            :src="imageSrc(selectedImage)"
+                            :src="Helper.imageSrc(selectedImage)"
                             alt="product.name"
                             class="w-full rounded-lg"
                         />
@@ -50,7 +49,7 @@
                         @click="selectedImage = image"
                     >
                         <img
-                            :src="imageSrc(image)"
+                            :src="Helper.imageSrc(image)"
                             alt="product.name"
                         />
                         <div
@@ -62,7 +61,17 @@
             </article>
             <article class="w-2/5 md:w-1/4 lg:w-1/5">
                 <div class="border border-gray-800 rounded-lg p-4 text-right">
-                    <h3 class="text-2xl">{{ product.price.toLocaleString(locale, {style: 'currency', currency: 'PLN', minimumFractionDigits: 2}) }}</h3>
+                    <h3
+                        v-if="salePrice === null"
+                        class="text-2xl"
+                    >{{ Helper.localeCurrencyString(product.price) }}</h3>
+                    <h3
+                        v-else
+                        class="text-2xl"
+                    >
+                        <span class="line-through">{{ Helper.localeCurrencyString(product.price) }}</span>&nbsp;
+                        <span>{{ Helper.localeCurrencyString(+salePrice) }}</span>
+                    </h3>
                     <div class="flex items-center justify-end mt-4">
                         <input type="number" min="1" inputmode="numeric" v-model="form.count" class="w-14 mr-2 p-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors duration-300 flex-grow"/>
                         <button

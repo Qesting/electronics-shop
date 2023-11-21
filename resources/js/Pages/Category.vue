@@ -31,10 +31,16 @@
     const sortOptions = ref({property: 'orderCount', asc: false});
     const sortedProducts = computed(() => {
         const {property, asc} = sortOptions.value;
-        return props.products.sort((a, b) => asc ? a[property] - b[property] : b[property] - a[property]);
+        return property === 'price'
+            ? props.products.sort((a, b) => {
+                const priceOfA = +(a?.sales[0]?.pivot?.price ?? a.price);
+                const priceOfB = +(b?.sales[0]?.pivot?.price ?? b.price);
+                return asc
+                    ? priceOfA - priceOfB
+                    : priceOfB - priceOfA;
+            })
+            : props.products.sort((a, b) => asc ? a[property] - b[property] : b[property] - a[property]);
     });
-
-    const navHeight = 4.5 * parseFloat(getComputedStyle(document.documentElement).fontSize); //4.5rem
 
     const sliderValue = (event, property, key) => {
         if (!filterValues[property]) {
@@ -93,7 +99,7 @@
         <title>{{ Helper.capitalize(category.name) }} | Ars Insolitam</title>
         <meta name="description" :content="'Przeglądaj ' + category.name + ' w Ars Insolitam.'"/>
     </Head>
-    <Layout :categories="categories" @height-change="newHeight => navHeight = newHeight">
+    <Layout :categories="categories">
         <Transition
             name="expand"
             :duration="300"

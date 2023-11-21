@@ -41,7 +41,7 @@ class PageController extends Controller
                 'categories' => PageHelperController::categories(),
                 'category' => $category,
                 'properties' => CategoryDetailsController::getPropertyRanges($category),
-                'products' => PageHelperController::products($category)
+                'products' => PageHelperController::categoryProducts($category)
             ]
         );
     }
@@ -64,7 +64,7 @@ class PageController extends Controller
                 'categories' => PageHelperController::categories(),
                 'category' => $category,
                 'properties' => CategoryDetailsController::getPropertyRanges($category),
-                'products' => PageHelperController::products($category, $filters)
+                'products' => PageHelperController::categoryProducts($category, $filters)
             ]
         );
     }
@@ -94,14 +94,46 @@ class PageController extends Controller
      *
      * @return \Inertia\Response
      */
-    public function cartPage(Request $request): Response
+    public function cartPage(\App\Http\Requests\DiscountCodeRequest $request): Response
     {
         return Inertia::render(
             'Cart',
             [
                 'categories' => PageHelperController::categories(),
                 'products' => PageHelperController::cartItems($request),
-                'code' => CartController::code($request)
+                'discountCode' => CartController::code($request)
+            ]
+        );
+    }
+
+    /**
+     * Render the shipping data and payment page.
+     *
+     * @param \Illuminate\Http\Request
+     *
+     * @return \Inertia\Response
+     */
+    public function shippingAndPaymentPage(
+        Request $request
+    ): \Inertia\Response | \Illuminate\Http\RedirectResponse {
+        if (!$request->session()->has('cart')) {
+            return redirect('/cart');
+        }
+
+        $customerData = PageHelperController::arrayToCamelCase(
+            PageHelperController::customerData($request)->toArray()
+        );
+
+        return Inertia::render(
+            'ShippingAndPayment',
+            [
+                'categories' => PageHelperController::categories(),
+                'products' => PageHelperController::cartItems($request),
+                'notLoggedIn' => !Auth::check(),
+                'shippingMethods' => PageHelperController::shippingMethods(),
+                'paymentMethods' => PageHelperController::paymentMethods(),
+                'customerData' => $customerData,
+                'orderMethods' => $request->session()->get('orderMethods', null)
             ]
         );
     }
@@ -113,8 +145,13 @@ class PageController extends Controller
      *
      * @return \Inertia\Response
      */
-    public function checkoutPage(Request $request): Response
-    {
+    public function checkoutPage(
+        Request $request
+    ): \Inertia\Response | \Illuminate\Http\RedirectResponse {
+        if (!$request->session()->has(['cart', 'customer', 'orderMethods'])) {
+            return redirect('/cart');
+        }
+
         $customerData = PageHelperController::arrayToCamelCase(
             PageHelperController::customerData($request)->toArray()
         );
@@ -124,38 +161,69 @@ class PageController extends Controller
             [
                 'categories' => PageHelperController::categories(),
                 'products' => PageHelperController::cartItems($request),
-                'notLoggedIn' => !Auth::check(),
-                'shippingMethods' => PageHelperController::shippingMethods(),
-                'paymentMethods' => PageHelperController::paymentMethods(),
-                'customerData' => $customerData
+                'customerData' => $customerData,
+                'orderMethods' => $request->session()->get('orderMethods'),
+                'discountCode' => $request->session()->get('discountCode')
             ]
         );
     }
 
-    /**
-     * Render the end checkout page.
-     *
-     * @param \Illuminate\Http\Request
-     *
-     * @return \Inertia\Response
-     */
-    public function endCheckoutPage(Request $request): Response
+    public function orderedPage(): Response
     {
-        $customerData = PageHelperController::arrayToCamelCase(
-            PageHelperController::customerData($request)->toArray()
-        );
-
-        $orderMethods = PageHelperController::arrayToCamelCase(
-            CartController::saveShippingData($request)
-        );
-
         return Inertia::render(
-            'EndCheckout',
+            'Ordered',
+            [
+                'categories' => PageHelperController::categories()
+            ]
+        );
+    }
+
+    public function salePage(int $saleId): Response
+    {
+        return Inertia::render(
+            'Sale',
             [
                 'categories' => PageHelperController::categories(),
-                'products' => PageHelperController::cartItems($request),
-                'customerData' => $customerData,
-                'orderMethods' => $orderMethods
+                'sale' => PageHelperController::sale($saleId)
+            ]
+        );
+    }
+
+    public function loginPage(): \Inertia\Response | \Illuminate\Http\RedirectResponse
+    {
+        if (Auth::check()) {
+            return redirect('user/dashboard');
+        }
+
+        return Inertia::render(
+            'Login',
+            [
+                'categories' => PageHelperController::categories()
+            ]
+        );
+    }
+
+    public function registerPage(): \Inertia\Response | \Illuminate\Http\RedirectResponse
+    {
+        if (Auth::check()) {
+            return redirect('user/dashboard');
+        }
+
+        return Inertia::render(
+            'Register',
+            [
+                'categories' => PageHelperController::categories()
+            ]
+        );
+    }
+
+    public function dashboardPage(): Response
+    {
+        return Inertia::render(
+            'Dashboard',
+            [
+                'categories' => PageHelperController::categories(),
+                'orders' => Auth::user()->orders
             ]
         );
     }
