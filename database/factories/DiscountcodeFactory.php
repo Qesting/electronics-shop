@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
@@ -20,7 +21,7 @@ class DiscountcodeFactory extends Factory
         return [
             'code'=>Str::random(10),
             'discount' =>rand(1,10),
-            //'expires_at' =>
+            'expires_at' => Carbon::today(+30)
         ];
     }
 }

@@ -20,7 +20,7 @@ class OrderFactory extends Factory
     public function definition(): array
     {
         return [
-            //'total'=>
+            'total'=> rand(1/100,30000/100),
             'dicount_code_id'=>rand(1,999),
             //'customer_id'=>
             //'payment_method_id'=>
