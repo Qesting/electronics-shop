@@ -61,8 +61,13 @@ class User extends Authenticatable
         return $this->hasMany(ProductReview::class);
     }
 
+    /**
+     * Get all of the orders the user has placed.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
+     */
     public function orders(): \Illuminate\Database\Eloquent\Relations\HasManyThrough
     {
-        return $this->hasManyThrough(Customer::class, Order::class, 'customer_id', 'id');
+        return $this->hasManyThrough(Order::class, Customer::class, 'id', 'customer_id');
     }
 }

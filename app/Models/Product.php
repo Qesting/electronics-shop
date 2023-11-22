@@ -15,10 +15,16 @@ class Product extends Model
     use HasFactory;
     use SoftDeletes;
 
-    protected $appends = ['rating'];
+    protected $appends = ['rating', 'popularity'];
+
     public function getRatingAttribute()
     {
-        return $this->reviews()->avg('rating');
+        return (int) $this->reviews()->avg('rating');
+    }
+
+    public function getPopularityAttribute()
+    {
+        return $this->orders()->count();
     }
 
     /**

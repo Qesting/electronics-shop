@@ -502,6 +502,13 @@ class CategoryDetailsController extends Controller
         return $result;
     }
 
+    /**
+     * Get min and max or choices for each Category property.
+     *
+     * @param \App\Models\Category $category
+     *
+     * @return array
+     */
     public static function getPropertyRanges(Category $category): array
     {
         $directives = self::matchDirectives($category);

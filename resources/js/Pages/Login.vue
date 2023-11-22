@@ -12,7 +12,8 @@
 
     const loginForm = useForm({
         emailAddress: null,
-        password: null
+        password: null,
+        remember: false
     });
 
 </script>
@@ -31,21 +32,29 @@
                     <label>
                         <span>Adres e-mail</span>
                         <input
-                        type="email"
-                        class="w-80 block p-1 border border-current rounded-lg"
-                        v-model="loginForm.emailAddress"
+                            type="email"
+                            class="w-80 block p-1 border border-current rounded-lg"
+                            v-model="loginForm.emailAddress"
                         />
                     </label>
                     <span class="error-msg" v-if="errors?.emailAddress">{{ errors?.emailAddress }}</span>
                     <label>
                         <span>Hasło</span>
                         <input
-                        type="password"
-                        class="w-80 block p-1 border border-current rounded-lg"
-                        v-model="loginForm.password"
+                            type="password"
+                            class="w-80 block p-1 border border-current rounded-lg"
+                            v-model="loginForm.password"
                         />
                     </label>
                     <span class="error-msg" v-if="errors?.password">{{ errors?.password }}</span>
+                    <label class="w-80 my-2">
+                        <input
+                            type="checkbox"
+                            v-model="loginForm.remember"
+                            class="mr-2"
+                        />
+                        <span>Zapamiętaj</span>
+                    </label>
                     <div class="my-4">
                         Nie masz jeszcze konta?
                         <Link

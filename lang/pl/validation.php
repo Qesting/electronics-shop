@@ -194,8 +194,20 @@ return [
         'shippingData.address.street' => 'ulica',
         'shippingData.address.building' => 'nr budynku',
         'shippingData.address.apartment' => 'nr lokalu',
+        'firstName' => 'imię',
+        'lastName' => 'nazwisko',
+        'emailAddress' => 'adres e-mail',
+        'phoneNumber' => 'numer telefonu',
+        'address.country' => 'państwo',
+        'address.city' => 'miasto',
+        'address.postalCode' => 'kod pocztowy',
+        'address.street' => 'ulica',
+        'address.building' => 'nr budynku',
+        'address.apartment' => 'nr lokalu',
         'shippingMethod' => 'metoda wysyłki',
-        'paymentMethod' => 'metoda płatności'
+        'paymentMethod' => 'metoda płatności',
+        'rating' => 'ocena',
+        'content' => 'treść'
     ],
 
 ];

@@ -18,90 +18,141 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get(
-    '/product/{productId}',
-    [PageController::class, 'productPage']
-)->whereNumber('productId');
+/* Page routes */
+Route::controller(PageController::class)->group(function () {
+    Route::get(
+        '/product/{productId}',
+        'productPage'
+    )->whereNumber('productId');
 
-Route::get(
-    '/category/{categoryId}',
-    [PageController::class, 'categoryPage']
-)->whereNumber('categoryId');
+    Route::get(
+        '/category/{categoryId}',
+        'categoryPage'
+    )->whereNumber('categoryId');
 
-Route::post(
-    '/category/{categoryId}',
-    [PageController::class, 'filteredCategoryPage']
-)->whereNumber('categoryId');
+    Route::post(
+        '/category/{categoryId}',
+        'filteredCategoryPage'
+    )->whereNumber('categoryId');
 
-Route::match(
-    ['get', 'post'],
-    '/cart',
-    [PageController::class, 'cartPage']
-);
+    Route::match(
+        ['get', 'post'],
+        '/cart',
+        'cartPage'
+    );
 
-Route::put(
-    '/cart/add',
-    [CartController::class, 'add']
-);
+    Route::get(
+        '/cart/shippingAndPayment',
+        'shippingAndPaymentPage'
+    );
 
-Route::put(
-    '/cart/update',
-    [CartController::class, 'update']
-);
+    Route::get(
+        '/cart/checkout',
+        'checkoutPage'
+    );
 
-Route::get(
-    '/cart/shippingAndPayment',
-    [PageController::class, 'shippingAndPaymentPage']
-);
+    Route::get(
+        'cart/order/done',
+        'orderedPage'
+    );
 
-Route::post(
-    '/cart/checkout',
-    [CartController::class, 'saveShippingData']
-);
+    Route::get(
+        'sale/{saleId}',
+        'salePage'
+    )->whereNumber('saleId');
 
-Route::get(
-    '/cart/checkout',
-    [PageController::class, 'checkoutPage']
-);
+    Route::get(
+        'user/login',
+        'loginPage'
+    );
 
-Route::get(
-    '/cart/order',
-    [CartController::class, 'order']
-);
+    Route::get(
+        'user/register',
+        'registerPage'
+    );
 
-Route::get(
-    'cart/order/done',
-    [PageController::class, 'orderedPage']
-);
+    Route::get(
+        '/',
+        'indexPage'
+    );
+});
 
-Route::get(
-    'sale/{saleId}',
-    [PageController::class, 'salePage']
-)->whereNumber('saleId');
+/* Cart action routes */
+Route::controller(CartController::class)->group(function () {
+    Route::put(
+        '/cart/add',
+        'add'
+    );
 
-Route::get(
-    'user/login',
-    [PageController::class, 'loginPage']
-);
+    Route::put(
+        '/cart/update',
+        'update'
+    );
 
-Route::post(
-    'user/login',
-    [UserController::class, 'login']
-);
+    Route::post(
+        '/cart/checkout',
+        'checkout'
+    );
 
-Route::get(
-    'user/register',
-    [PageController::class, 'registerPage']
-);
+    Route::get(
+        '/cart/order',
+        'order'
+    );
+});
 
-Route::post(
-    'user/register',
-    [UserController::class, 'register']
-);
+/* User action routes */
+Route::controller(UserController::class)->group(function () {
+    Route::post(
+        'user/login',
+        'login'
+    );
 
-Route::get(
-    'user/dashboard',
-    [PageController::class, 'dashboardPage']
-);
+    Route::post(
+        'user/register',
+        'register'
+    );
+});
 
-Route::get('/', [PageController::class, 'indexPage']);
+/* Logged in routes */
+Route::middleware('auth.basic')->group(function () {
+    /* Page routes */
+    Route::controller(PageController::class)->group(function () {
+        Route::get(
+            'user/dashboard',
+            'dashboardPage'
+        );
+
+        Route::get(
+            'user/dashboard/shipping',
+            'editShippingDataPage'
+        );
+
+        Route::get(
+            'user/dashboard/passwd',
+            'newPasswdPage'
+        );
+    });
+
+    /* User action routes */
+    Route::controller(UserController::class)->group(function () {
+        Route::post(
+            '/product/{productId}/review',
+            'addReview'
+        )->whereNumber('productId');
+
+        Route::post(
+            'user/dashboard/shipping',
+            'saveShippingData'
+        );
+
+        Route::post(
+            'user/dashboard/passwd',
+            'changePasswd'
+        );
+
+        Route::get(
+            'user/dashboard/logout',
+            'logout'
+        );
+    });
+});

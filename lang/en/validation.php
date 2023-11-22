@@ -180,6 +180,31 @@ return [
     |
     */
 
-    'attributes' => [],
+    'attributes' => [
+        'emailAddress' => 'e-mail address',
+        'repeatPassword' => 'repeat password',
+        'shippingData.firstName' => 'first name',
+        'shippingData.lastName' => 'last name',
+        'shippingData.emailAddress' => 'e-mail address',
+        'shippingData.phoneNumber' => 'phone number',
+        'shippingData.address.country' => 'country',
+        'shippingData.address.city' => 'city',
+        'shippingData.address.postalCode' => 'postal code',
+        'shippingData.address.street' => 'street',
+        'shippingData.address.building' => 'building',
+        'shippingData.address.apartment' => 'apartment',
+        'firstName' => 'first name',
+        'lastName' => 'last name',
+        'emailAddress' => 'e-mail address',
+        'phoneNumber' => 'phone number',
+        'address.country' => 'country',
+        'address.city' => 'city',
+        'address.postalCode' => 'postal code',
+        'address.street' => 'street',
+        'address.building' => 'building',
+        'address.apartment' => 'apartment',
+        'shippingMethod' => 'metoda wysyłki',
+        'paymentMethod' => 'metoda płatności',
+    ],
 
 ];

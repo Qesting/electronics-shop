@@ -90,7 +90,7 @@
         >
             <div
                 v-show="expanded"
-                class="h-0 overflow-hidden flex flex-row transition-[height] duration-300 bg-white "
+                class="h-0 overflow-hidden flex flex-row transition-[height] duration-300 bg-white dark:bg-gray-900"
             >
                 <div class="inline-flex flex-col w-min justify-start items-start bg-red-700 pb-2">
                     <template
@@ -127,11 +127,11 @@
                         <li
                             v-if="!(child?.children?.length)"
                             :key="child.id"
-                            class="mx-2 p-2 basis-1/4 min-w-fit lg:basis-1/5 border border-white rounded-lg hover:border-red-600 transition-colors duration-300 redden-child-link"
+                            class="mb-2 mx-2 p-2 basis-1/4 min-w-fit lg:basis-1/5 border border-white dark:border-gray-900 rounded-lg hover:border-red-600 transition-colors duration-300 redden-child-link"
                         >
                             <Link
                                 :href="'/category/' + child.id"
-                                class="underline capitalize flex flex-col items-center transition-colors duration-300"
+                                class="dark:text-white underline capitalize flex flex-col items-center transition-colors duration-300"
                             >
                                 <span>{{ child.name }}</span>
                                 <img

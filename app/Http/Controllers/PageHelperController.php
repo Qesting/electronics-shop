@@ -66,7 +66,7 @@ class PageHelperController extends Controller
             }
         }
 
-        return $products->get([
+        return $products->where('number_in_stock', '>', 0)->get([
             'id',
             'name',
             'price',
@@ -96,10 +96,17 @@ class PageHelperController extends Controller
             },
             'category',
             'reviews',
-            'number_in_stock'
+            'reviews.user.customer'
         ])->findOrFail($productId);
     }
 
+    /**
+     * Retrieve a few products by ids.
+     *
+     * @param iterable $productIds
+     *
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
     public static function products(iterable $productIds): \Illuminate\Database\Eloquent\Collection
     {
         return Product::with([
@@ -112,7 +119,7 @@ class PageHelperController extends Controller
             'images' => function ($query) {
                 $query->where('thumbnail', '=', true);
             }
-        ])->whereIn('id', $productIds)->get([
+        ])->whereIn('id', $productIds)->where('number_in_stock', '>', 0)->get([
             'id',
             'name',
             'price',
@@ -164,16 +171,33 @@ class PageHelperController extends Controller
         return $products;
     }
 
+    /**
+     * Retrieve all payment methods.
+     *
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
     public static function paymentMethods(): Collection
     {
         return \App\Models\PaymentMethod::all();
     }
 
+    /**
+     * Retrieve all shipping methods.
+     *
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
     public static function shippingMethods(): Collection
     {
         return \App\Models\ShippingMethod::with(['shipper'])->get();
     }
 
+    /**
+     * Retrieve customer shipping data from currently logged in or session.
+     *
+     * @param \Illuminate\Http\Request $request
+     *
+     * @return \App\Models\Customer
+     */
     public static function customerData(Request $request): \App\Models\Customer
     {
         return Auth::check()
@@ -181,6 +205,13 @@ class PageHelperController extends Controller
             : $request->session()->get('customer', new \App\Models\Customer);
     }
 
+    /**
+     * Utility: convert array key case to camelCase.
+     *
+     * @param iterable $array
+     *
+     * @return array
+     */
     public static function arrayToCamelCase(iterable $array): array
     {
         $returnValue = [];
@@ -195,7 +226,14 @@ class PageHelperController extends Controller
         return $returnValue;
     }
 
-    public static function sale($saleId): Sale
+    /**
+     * Retrieve the given sale.
+     *
+     * @param int $saleId
+     *
+     * @return \App\Models\Sale
+     */
+    public static function sale(int $saleId): Sale
     {
         return Sale::with([
             'products',

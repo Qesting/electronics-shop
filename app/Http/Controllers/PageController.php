@@ -82,7 +82,8 @@ class PageController extends Controller
             'Product',
             [
                 'categories' => PageHelperController::categories(),
-                'product' => PageHelperController::product($productId)
+                'product' => PageHelperController::product($productId),
+                'loggedIn' => Auth::check()
             ]
         );
     }
@@ -148,7 +149,7 @@ class PageController extends Controller
     public function checkoutPage(
         Request $request
     ): \Inertia\Response | \Illuminate\Http\RedirectResponse {
-        if (!$request->session()->has(['cart', 'customer', 'orderMethods'])) {
+        if (!$request->session()->has(['cart', 'orderMethods'])) {
             return redirect('/cart');
         }
 
@@ -168,6 +169,11 @@ class PageController extends Controller
         );
     }
 
+    /**
+     * Render the 'ordered' page.
+     *
+     * @return \Inertia\Response
+     */
     public function orderedPage(): Response
     {
         return Inertia::render(
@@ -178,6 +184,13 @@ class PageController extends Controller
         );
     }
 
+    /**
+     * Render the specified sale page.
+     *
+     * @param int $saleId
+     *
+     * @return \Inertia\Response
+     */
     public function salePage(int $saleId): Response
     {
         return Inertia::render(
@@ -189,6 +202,11 @@ class PageController extends Controller
         );
     }
 
+    /**
+     * Render the login page.
+     *
+     * @return \Inertia\Response | \Illuminate\Http\RedirectResponse
+     */
     public function loginPage(): \Inertia\Response | \Illuminate\Http\RedirectResponse
     {
         if (Auth::check()) {
@@ -203,6 +221,11 @@ class PageController extends Controller
         );
     }
 
+    /**
+     * Render the register page.
+     *
+     * @return \Inertia\Response | \Illuminate\Http\RedirectResponse
+     */
     public function registerPage(): \Inertia\Response | \Illuminate\Http\RedirectResponse
     {
         if (Auth::check()) {
@@ -217,13 +240,56 @@ class PageController extends Controller
         );
     }
 
+    /**
+     * Render the dashboard page.
+     *
+     * @return \Inertia\Response
+     */
     public function dashboardPage(): Response
     {
         return Inertia::render(
             'Dashboard',
             [
                 'categories' => PageHelperController::categories(),
-                'orders' => Auth::user()->orders
+                'orders' => Auth::user()->orders()->with([
+                    'products',
+                    'products.images' => function ($query) {
+                        $query->where('thumbnail', true)->first();
+                    }
+                ])->get()
+            ]
+        );
+    }
+
+    /**
+     * Render the 'edit shipping data' page.
+     *
+     * @return \Inertia\Response
+     */
+    public function editShippingDataPage(): Response
+    {
+        return Inertia::render(
+            'UserShippingData',
+            [
+                'categories' => PageHelperController::categories(),
+                'shippingData' => PageHelperController::arrayToCamelCase(
+                    Auth::user()->customer()->with('address')->first()->toArray()
+                )
+            ]
+        );
+    }
+
+    /**
+     * Render the 'change password' page.
+     *
+     * @return \Inertia\Response
+     */
+    public function newPasswdPage(): Response
+    {
+        return Inertia::render(
+            'Passwd',
+            [
+                'categories' => PageHelperController::categories()
             ]
         );
     }

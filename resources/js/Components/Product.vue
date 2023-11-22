@@ -1,6 +1,7 @@
 <script setup>
 import { Link, useForm } from '@inertiajs/vue3';
 import Helper from '../Helper';
+import RatingStars from './RatingStars.vue';
 
     const props = defineProps({
         product: {
@@ -22,13 +23,18 @@ import Helper from '../Helper';
 
 <template>
     <div
-        class="mx-2 p-2 basis-1/5 lg:basis-1/6 flex-shrink-0 text-center flex flex-col items-center border border-white rounded-lg hover:border-red-700 transition-colors duration-300"
+        class="mx-2 p-2 basis-1/5 lg:basis-1/6 flex-shrink-0 text-center flex flex-col items-center border border-white dark:border-gray-900 rounded-lg hover:border-red-700 transition-colors duration-300"
     >
-        <img
-            :src="Helper.imageSrc(product.images[0])"
-            alt="zdjęcie produktu"
-            class="rounded-lg"
-        />
+        <div class="relative">
+            <img
+                :src="Helper.imageSrc(product.images[0])"
+                alt="zdjęcie produktu"
+                class="rounded-lg"
+            />
+            <span class="block absolute top-1 right-1">
+                <RatingStars :rating="product.rating"/>
+            </span>
+        </div>
         <Link
             :href="'/product/' + product.id"
             class="underline transition-colors duration-300 hover:text-red-700 capitalize"

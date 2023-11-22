@@ -14,7 +14,7 @@
 
 <template>
     <div
-        class="mx-2 p-2 basis-1/5 lg:basis-1/6 flex-shrink-0 text-center flex flex-col items-center border border-white rounded-lg hover:border-red-700 transition-colors duration-300"
+        class="mx-2 p-2 basis-1/5 lg:basis-1/6 flex-shrink-0 text-center flex flex-col items-center border border-white dark:border-gray-900 rounded-lg hover:border-red-700 transition-colors duration-300"
     >
         <img
             :src="Helper.imageSrc(sale.image)"

@@ -11,6 +11,8 @@ class ProductReview extends Model
 {
     use HasFactory;
 
+    protected $fillable = ['rating', 'content'];
+
     /**
      * Get the product that owns the ProductReview
      *
@@ -29,15 +31,5 @@ class ProductReview extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
-    }
-
-    /**
-     * Images belonging to the product
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\MorphMany
-     */
-    public function images(): MorphMany
-    {
-        return $this->morphMany(Image::class, 'resource');
     }
 }

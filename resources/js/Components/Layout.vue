@@ -12,7 +12,7 @@
     </div>
     <div class="mx-auto lg:w-3/4 lg:mt-32 min-h-screen bg-white shadow-md relative z-10 flex flex-col rounded-t-lg">
         <Navbar :categories="categories"/>
-        <div class="flex-grow">
+        <div class="flex-grow dark:text-white dark:bg-gray-900">
             <slot/>
         </div>
         <footer class="bg-red-700 text-white px-8 py-4 clear-both">

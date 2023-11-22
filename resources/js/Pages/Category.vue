@@ -28,7 +28,7 @@
         });
     };
 
-    const sortOptions = ref({property: 'orderCount', asc: false});
+    const sortOptions = ref({property: 'popularity', asc: false});
     const sortedProducts = computed(() => {
         const {property, asc} = sortOptions.value;
         return property === 'price'
@@ -109,13 +109,13 @@
         >
             <aside
                 v-show="filterSidebarExpanded"
-                class="fixed bottom-0 left-0 w-0 top-0 h-screen bg-white z-30 overflow-hidden transition-[width] duration-300 lg:w-min-1/5 lg:!w-1/5 lg:!block lg:float-left lg:h-auto lg:relative"
+                class="fixed bottom-0 left-0 w-0 top-0 h-screen bg-white dark:bg-gray-900 z-30 overflow-hidden transition-[width] duration-300 lg:w-min-1/5 lg:!w-1/5 lg:!block lg:float-left lg:h-auto lg:relative"
             >
                 <h2
                     class="text-3xl capitalize text-center mb-4 py-8 font-bold relative w-screen lg:w-full"
                 >
                     <span>Filtry</span>
-                    <span class="block w-full h-0.5 absolute bottom-0 left-0 right-0 bg-gradient-to-r from-white via-red-700 to-white"></span>
+                    <span class="block w-full h-0.5 absolute bottom-0 left-0 right-0 bg-gradient-to-r from-white via-red-700 to-white dark:from-gray-900 dark:via-red-700 dark:to-gray-900"></span>
                 </h2>
                 <form
                     @submit.prevent="filter"
@@ -123,13 +123,13 @@
                 >
                     <article>
                         <h3
-                            class="text-center font-bold"
+                            class="text-center font-bold mb-2"
                         >Sortowanie</h3>
                         <select
                             v-model="sortOptions"
-                            class="block w-min mx-auto p-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors duration-300"
+                            class="block w-min mx-auto p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors duration-300"
                         >
-                            <option :value="{property: 'orderCount', asc: false}">Popularność</option>
+                            <option :value="{property: 'popularity', asc: false}">Popularność</option>
                             <option :value="{property: 'rating', asc: false}">Ocena</option>
                             <option :value="{property: 'price', asc: true}">Cena: od najtańszych</option>
                             <option :value="{property: 'price', asc: false}">Cena: od najdroższych</option>
@@ -172,7 +172,12 @@
                             </template>
                             <template v-else>
                                 <label v-for="choice in properties[key].choices">
-                                    <input v-model="filterValues[key]" type="checkbox" :name="key+'[]'" :value="choice"/>
+                                    <input
+                                        v-model="filterValues[key]"
+                                        type="checkbox"
+                                        :name="key+'[]'"
+                                        :value="choice"
+                                    />
                                     {{ choice }}
                                 </label>
                             </template>
@@ -185,7 +190,7 @@
                             @click="filterValues.reset()"
                             :disabled="filterValues.processing"
                             type="reset"
-                            class="block w-32 mx-auto text-center py-2 px-4 text-white bg-gray-800 rounded-lg my-2 transition-colors duration-300 hover:bg-gray-900"
+                            class="block w-32 mx-auto text-center py-2 px-4 text-white bg-gray-800 rounded-lg my-2 transition-colors duration-300 hover:bg-gray-900 dark:hover:bg-gray-700"
                         ><span class="bi-arrow-clockwise"></span> Wyczyść</button>
                         <button
                             :disabled="filterValues.processing"

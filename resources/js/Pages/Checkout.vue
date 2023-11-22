@@ -43,7 +43,7 @@
                             <div class="flex-grow ml-4">
                                 <h4 class="text-lg font-bold">{{ Helper.capitalize(product.name) }}</h4>
                                 <span>{{ product.manufacturer.name }}</span>&nbsp;
-                                <span v-if="product?.sales[0]?.pivot?.price !== null">
+                                <span v-if="product?.sales[0]?.pivot?.price">
                                     <span class="line-through">{{ Helper.localeCurrencyString(product.price) }}</span>&nbsp;
                                     <span>{{ Helper.localeCurrencyString(+product?.sales[0]?.pivot?.price) }}</span>
                                 </span>

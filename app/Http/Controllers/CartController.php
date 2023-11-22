@@ -7,19 +7,38 @@ use Illuminate\Support\Str;
 
 class CartController extends Controller
 {
+    /**
+     * Add products to cart.
+     *
+     * @param \App\Http\Requests\AddToCartRequest $request
+     *
+     * @return void
+     */
     public function add(\App\Http\Requests\AddToCartRequest $request): void
     {
         [
             'productId' => $productId,
             'count' => $count
         ] = $request->validated();
+        $currentCount = $request->session()->get("cart.{$productId}", 0);
+        $realCount = min(
+            $count + $currentCount,
+            \App\Models\Product::findOrFail($productId)->value('number_in_stock') - $currentCount
+        );
         if ($request->session()->has("cart.{$productId}")) {
-            $request->session()->increment("cart.{$productId}", $count);
+            $request->session()->increment("cart.{$productId}", $realCount);
         } else {
-            $request->session()->put("cart.{$productId}", $count);
+            $request->session()->put("cart.{$productId}", $realCount);
         }
     }
 
+    /**
+     * Mass update cart.
+     *
+     * @param \App\Http\Requests\UpdateCartRequest $request
+     *
+     * @return void
+     */
     public function update(\App\Http\Requests\UpdateCartRequest $request): void
     {
         $valid = $request->validated();
@@ -36,6 +55,13 @@ class CartController extends Controller
         }
     }
 
+    /**
+     * Check validity of discount code.
+     *
+     * @param \App\Http\Requests\DiscountCodeRequest $request
+     *
+     * @return \App\Models\DiscountCode
+     */
     public static function code(
         \App\Http\Requests\DiscountCodeRequest $request
     ): DiscountCode {
@@ -57,7 +83,14 @@ class CartController extends Controller
         return $discountCode;
     }
 
-    public static function saveShippingData(
+    /**
+     * Save shipping data.
+     *
+     * @param \App\Http\Requests\ShippingDataRequest $request
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function saveShippingData(
         \App\Http\Requests\ShippingDataRequest $request
     ): \Illuminate\Http\RedirectResponse {
         if (!$request->session()->has('cart')) {
@@ -109,7 +142,14 @@ class CartController extends Controller
         return redirect()->action([PageController::class, 'checkoutPage']);
     }
 
-    public static function order(
+    /**
+     * Save order to database, clear cart.
+     *
+     * @param \App\Http\Requests\Request $request
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function order(
         \Illuminate\Http\Request $request
     ): \Illuminate\Http\RedirectResponse {
         if (
@@ -137,7 +177,7 @@ class CartController extends Controller
         ] = $request->session()->get('orderMethods');
 
         $order = new \App\Models\Order();
-        $order->total = $totalPrice;
+        $order->total = $totalPrice + $shippingMethod->fee;
         $order->customer()->associate($customer);
         if ($discountCode->discount != 0) {
             $order->discountCode()->associate($discountCode);

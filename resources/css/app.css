@@ -7,16 +7,21 @@
 
 
 .redden-child-link:hover a {
-    --tw-bg-opacity: 1;
-    color: rgb(185 28 28 / var(--tw-bg-opacity));
+    @apply opacity-100;
+    @apply !text-red-700;
 }
 
-input:not(:is([type="checkbox"], [type="radio"])) {
+input:not(:is([type="checkbox"], [type="radio"])), textarea {
     @apply transition-colors;
     @apply duration-300;
 }
 
-input:not(:is([type="checkbox"], [type="radio"])):focus {
+input, textarea, select {
+    @apply dark:bg-gray-900;
+    @apply accent-red-700;
+}
+
+:is(input:not(:is([type="checkbox"], [type="radio"])), textarea):focus {
     outline: none !important;
     @apply border-red-700;
 }
