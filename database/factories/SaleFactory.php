@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use Carbon\Carbon;
 use Sale_product;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
@@ -21,7 +22,7 @@ class SaleFactory extends Factory
         return [
             'name' => Str::random(10),
             'description' => Str::random(40),
-            //'expires_at' =>
+            'expires_at' => Carbon::today()->addDays(30),
         ];
     }
 }

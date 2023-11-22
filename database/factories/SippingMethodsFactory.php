@@ -23,7 +23,7 @@ class SippingMethodsFactory extends Factory
             //'shipper_id' =>
             'min_days'=>rand(1,30),
             'max_days'=>rand(31,56),
-            //'fee'=>
+            'fee'=>rand(10/100,2000/100),
         ];
     }
 }
