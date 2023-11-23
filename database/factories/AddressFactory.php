@@ -3,7 +3,6 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Str;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Address>
@@ -18,10 +17,10 @@ class AddressFactory extends Factory
     public function definition(): array
     {
         return [
-            'country' => Str::random(10),
-            'city' => Str::random(10),
-            'postal_code'=> rand(10,99)."-".rand(100,999),
-            'street' => Str::random(20),
+            'country' => fake()->country(),
+            'city' => fake()->city(),
+            'postal_code'=> fake()->postcode(),
+            'street' => fake()->streetName(),
             'building' => rand(1,999),
             'apartment' => rand(0, 1) ? rand(1,999) : null,
         ];

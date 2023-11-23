@@ -2,11 +2,10 @@
 
 namespace Database\Factories;
 
-use App\Models\User;
 use App\Models\Product;
 use App\Models\ProductReview;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Str;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Model>
@@ -21,23 +20,18 @@ class ProductReviewFactory extends Factory
     public function definition(): array
     {
         return [
-            'rating'=>rand(1,6),
-            'content' => Str::random(100)
+            'rating'=>rand(1,5),
+            'content' => fake()->text(200)
         ];
     }
     public function configure(): ProductReviewFactory
     {
-        return $this->afterMaking(function (ProductReview $productreview) {
-            $users = User::inRandomOrder()->first();
-            $productreview->user()->associate($users)->save();
-        });
-    }
-    public function configure2(): ProductReviewFactory
-    {
-        return $this->afterMaking(function (ProductReview $productreview) {
-            $products = Product::inRandomOrder()->first();
-            $productreview->product()->associate($products)->save();
-        });
-    }
+        return $this->afterMaking(function (ProductReview $productReview) {
+            $user = User::inRandomOrder()->first();
+            $product = Product::inRandomOrder()->first();
 
+            $productReview->user()->associate($user);
+            $productReview->product()->associate($product);
+        });
+    }
 }

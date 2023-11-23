@@ -2,12 +2,13 @@
 
 namespace Database\Factories;
 
+use App\Models\Customer;
+use App\Models\DiscountCode;
 use App\Models\Order;
 use App\Models\PaymentMethod;
-use App\Models\Customer;
+use App\Models\Product;
 use App\Models\ShippingMethod;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Str;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Order>
@@ -22,10 +23,7 @@ class OrderFactory extends Factory
     public function definition(): array
     {
         return [
-            'total'=> rand(1/100,30000/100),
-            'dicount_code_id'=>rand(1,999),
-            //'payment_method_id'=>
-            //'shipping_method_id'=>
+            'total'=> rand(1E+2, 3E+6) / 100,
             'completed'=>rand(0,1)
         ];
     }
@@ -34,24 +32,28 @@ class OrderFactory extends Factory
     {
         return $this->afterMaking(function (Order $order) {
             $customer = Customer::inRandomOrder()->first();
-            $order->customer()->associate($customer)->save();
-        });
-    }
-
-    public function configure2(): OrderFactory
-    {
-        return $this->afterMaking(function (Order $order) {
-            $PaymentMethod = PaymentMethod::inRandomOrder()->first();
-            $order->paymentMethod()->associate($PaymentMethod)->save();
-        });
-    }
-
-    public function configure3(): OrderFactory
-    {
-        return $this->afterMaking(function (Order $order) {
+            $paymentMethod = PaymentMethod::inRandomOrder()->first();
             $shippingMethod = ShippingMethod::inRandomOrder()->first();
-            $order->ShippingMethod()->associate($shippingMethod)->save();
+
+            $order->customer()->associate($customer);
+            $order->paymentMethod()->associate($paymentMethod);
+            $order->shippingMethod()->associate($shippingMethod);
+
+            if (rand(0, 1)) {
+                $discountCode = DiscountCode::inRandomOrder()->first();
+                $order->discountCode()->associate($discountCode);
+            }
+        })->afterCreating(function (Order $order) {
+            $products = Product::inRandomOrder()->take(rand(1, 20))->get('id');
+            $parsedProducts = collect();
+            $products->each(function ($product) use ($parsedProducts) {
+                $parsedProducts->put($product->id, [
+                    'quantity' => rand(1, 20),
+                    'returned' => rand(0, 1)
+                ]);
+            });
+            $order->products()->attach($parsedProducts);
+            $order->save();
         });
     }
-
 }

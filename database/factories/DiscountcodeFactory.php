@@ -9,7 +9,7 @@ use Illuminate\Support\Str;
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Discountcode>
  */
-class DiscountcodeFactory extends Factory
+class DiscountCodeFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -19,9 +19,9 @@ class DiscountcodeFactory extends Factory
     public function definition(): array
     {
         return [
-            'code'=>Str::random(10),
-            'discount' =>rand(1,10),
-            'expires_at' => Carbon::today(+30)
+            'code' => Str::upper(fake()->word()),
+            'discount' => rand(1,10),
+            'expires_at' => Carbon::today()->addDays(30)
         ];
     }
 }

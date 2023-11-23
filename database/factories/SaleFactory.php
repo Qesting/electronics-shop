@@ -2,10 +2,10 @@
 
 namespace Database\Factories;
 
+use App\Models\Product;
+use App\Models\Sale;
 use Carbon\Carbon;
-use Sale_product;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Str;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Sale>
@@ -20,9 +20,24 @@ class SaleFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => Str::random(10),
-            'description' => Str::random(40),
+            'name' => fake()->sentence(3, false),
+            'description' => fake()->text(200),
             'expires_at' => Carbon::today()->addDays(30),
         ];
+    }
+
+    public function configure(): SaleFactory
+    {
+        return $this->afterCreating(function (Sale $sale) {
+            $products = Product::inRandomOrder()->take(rand(1, 20))->get('id');
+            $parsedProducts = collect();
+            $products->each(function ($product) use ($parsedProducts) {
+                $parsedProducts->put($product->id, [
+                    'price' => rand(1E+2, 2E+3) / 100
+                ]);
+            });
+            $sale->products()->attach($parsedProducts);
+            $sale->save();
+        });
     }
 }

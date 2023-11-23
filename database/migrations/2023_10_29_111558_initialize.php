@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('addresses', function (Blueprint $table) {
             $table->id();
 
-            $table->string('country', 20)->nullable();
-            $table->string('city', 30)->nullable();
+            $table->string('country', 40)->nullable();
+            $table->string('city', 40)->nullable();
             $table->char('postal_code', 6)->nullable();
             $table->string('street', 40)->nullable();
             $table->unsignedSmallInteger('building')->nullable();
@@ -213,6 +213,7 @@ return new class extends Migration
 
             $table->string('name', 40);
             $table->char('eu_tax_id', 12);
+            $table->foreignId('address_id')->constrained();
 
             $table->timestamps();
         });

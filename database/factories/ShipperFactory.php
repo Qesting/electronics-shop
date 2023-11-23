@@ -2,13 +2,13 @@
 
 namespace Database\Factories;
 
-use App\Models\ShippingMethods;
+use App\Models\Shipper;
+use App\Models\Address;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Str;
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Model>
  */
-class SipperFactory extends Factory
+class ShipperFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -18,8 +18,16 @@ class SipperFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => Str::random(15),
-            'eu_tax_id' => rand(1,999),
+            'name' => fake()->company(),
+            'eu_tax_id' => fake()->countryCode() . str_pad(rand(0, 1E+9), 10, '0'),
         ];
+    }
+
+    public function configure(): ShipperFactory
+    {
+        return $this->afterMaking(function (Shipper $shipper) {
+            $address = Address::inRandomOrder()->first();
+            $shipper->address()->associate($address);
+        });
     }
 }
