@@ -2,9 +2,10 @@
 
 namespace Database\Factories;
 
-use Users;
-use Orders;
-use Addresses;
+use App\Models\Users;
+use App\Models\Orders;
+use App\Models\Address;
+use App\Models\Customer;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
@@ -24,10 +25,16 @@ class CustomerFactory extends Factory
         return [
             'first_name'=>Str::random(10),
             'last_name'=>Str::random(10),
-            //'address_id'=>rand(1,100),
             'email_address'=>Str::random(15)."@".Str::random(10),
             'phone_number'=>Str::random(15),
 
         ];
+    }
+        public function configure(): CustomerFactory
+    {
+        return $this->afterMaking(function (Customer $customer) {
+            $address = Address::inRandomOrder()->first();
+            $customer->address()->associate($address)->save();
+        });
     }
 }

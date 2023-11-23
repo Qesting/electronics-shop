@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Models\Address;
+use App\Models\Manufacturer;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
@@ -19,8 +21,14 @@ class ManufacturerFactory extends Factory
     {
         return [
             'name' => Str::random(30),
-            //'address_id'=>
             'eu_tx_id'=> rand(1,1000)
         ];
+    }
+    public function configure(): ManufacturerFactory
+    {
+        return $this->afterMaking(function (Manufacturer $manufacturer) {
+            $address = Address::inRandomOrder()->first();
+            $manufacturer->address()->associate($address)->save();
+        });
     }
 }

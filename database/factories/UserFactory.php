@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Models\Customer;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
@@ -18,9 +20,16 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
-            //'customer_id' =>
+
             'password_hash' => Str::random(30),
             'remember_token' => rand(1,1000)
         ];
+    }
+    public function configure(): UserFactory
+    {
+        return $this->afterMaking(function (User $user) {
+            $customer = Customer::inRandomOrder()->first();
+            $user->customer()->associate($customer)->save();
+        });
     }
 }
