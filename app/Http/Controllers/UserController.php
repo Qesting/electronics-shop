@@ -155,7 +155,7 @@ class UserController extends Controller
     }
 
     /**
-     * Register a user out.
+     * Log a user out.
      *
      * @return \Illuminate\Http\RedirectResponse
      */

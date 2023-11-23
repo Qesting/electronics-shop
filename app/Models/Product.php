@@ -19,7 +19,7 @@ class Product extends Model
 
     public function getRatingAttribute()
     {
-        return (int) $this->reviews()->avg('rating');
+        return round($this->reviews()->avg('rating'));
     }
 
     public function getPopularityAttribute()

@@ -26,7 +26,7 @@
             <Section name="Dane Adresowe">
                 <form
                     @submit.prevent="shippingDataForm.post('/user/dashboard/shipping')"
-                    class="flex flex-col justify-between items-center lg:flex-row py-4"
+                    class="flex flex-col justify-between items-center py-4"
                 >
                     <h3
                         class="block text-xl font-bold my-4 text-center"
