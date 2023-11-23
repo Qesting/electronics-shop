@@ -15,7 +15,7 @@
         discountCode: Object
     });
 
-    const totalPrice = props.products.map(product => +(product?.sales[0]?.pivot?.price ?? product.price) * product.quantity).reduce((accumulator, value) => accumulator + value);
+    const totalPrice = props.products.map(product => +(product?.sales[0]?.pivot?.price ?? product.price) * product.quantity).reduce((accumulator, value) => accumulator + value) + +props.orderMethods.shippingMethod.fee;
 </script>
 
 <template>

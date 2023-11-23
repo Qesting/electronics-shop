@@ -1,5 +1,5 @@
 <script setup>
-    import { ref } from 'vue';
+    import { ref, watch } from 'vue';
     import { Link } from '@inertiajs/vue3';
     import Helper from '../Helper';
 
@@ -54,6 +54,16 @@
             element.style.height = 0;
         });
     };
+
+    const darkmode = ref(localStorage.getItem('ai-darkmode') === 'true');
+    if (darkmode.value) {
+        document.body.classList.add('dark');
+    }
+
+    watch(darkmode, newValue => {
+        localStorage.setItem('ai-darkmode', newValue);
+        document.body.classList.toggle('dark');
+    });
 </script>
 
 <template>
@@ -70,6 +80,11 @@
                 aria-label="strona główna"
             ></Link>
             <h1 class="grow text-center text-3xl capitalize font-bold">ars insolitam</h1>
+            <button
+                @click="darkmode = !darkmode"
+                class="text-2xl text-center inline-block box-border w-10 h-10 p-0.5 rounded-lg hover:bg-red-800 transition-colors duration-300"
+                :class="[darkmode ? 'bi-moon' : 'bi-sun']"
+            ></button>
             <Link
                 href="/cart"
                 class="bi-cart-fill text-2xl text-center inline-block box-border w-10 h-10 p-0.5 rounded-lg hover:bg-red-800 transition-colors duration-300"

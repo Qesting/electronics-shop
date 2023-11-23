@@ -91,7 +91,7 @@ Route::controller(CartController::class)->group(function () {
 
     Route::post(
         '/cart/checkout',
-        'checkout'
+        'saveShippingData'
     );
 
     Route::get(

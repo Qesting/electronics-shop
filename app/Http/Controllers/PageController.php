@@ -254,7 +254,7 @@ class PageController extends Controller
                 'orders' => Auth::user()->orders()->with([
                     'products',
                     'products.images' => function ($query) {
-                        $query->where('thumbnail', true)->first();
+                        $query->where('thumbnail', true);
                     }
                 ])->get()
             ]

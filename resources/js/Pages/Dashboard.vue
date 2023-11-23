@@ -6,10 +6,12 @@
     import { Head, Link } from '@inertiajs/vue3';
     import Helper from '../Helper';
 
-    defineProps({
+    const props = defineProps({
         categories: Array,
         orders: Array
     });
+
+    console.log(props.orders);
 
 </script>
 
@@ -20,8 +22,8 @@
     <Layout :categories="categories">
         <div class="py-4">
             <Section name="Strona Użytkownika">
-                <div class="py-4 flex flex-col lg:flex-row-reverse">
-                    <article class="w-full lg:w-1/4 lg:ml-auto">
+                <div class="py-4 flex flex-col items-center">
+                    <article class="w-full">
                         <h3
                             class="text-2xl font-bold my-4 text-center"
                         >Opcje</h3>
@@ -40,7 +42,7 @@
                             >Wyloguj</Link>
                         </div>
                     </article>
-                    <article class="w-full lg:w-2/3">
+                    <article class="w-full">
                         <h3
                             class="text-2xl font-bold my-4 text-center"
                         >Zamówienia</h3>

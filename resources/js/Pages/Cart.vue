@@ -115,7 +115,7 @@ import { computed } from '@vue/reactivity';
                         </div>
                     </div>
                 </div>
-                <div class="mb-4 lg:ml-4 lg:mb-0 border border-black rounded-lg p-4 h-fit lg:w-2/5">
+                <div class="mb-4 lg:ml-4 lg:mb-0 border border-current rounded-lg p-4 h-fit lg:w-2/5">
                     <label>
                         Mam kod promocyjny&nbsp;
                         <input type="checkbox" v-model="showCodeInput"/>
@@ -126,7 +126,7 @@ import { computed } from '@vue/reactivity';
                             type="text"
                             placeholder="Wpisz kod..."
                             v-model="promoCode.code"
-                            class="border border-black rounded-md p-1 my-2"
+                            class="border border-current rounded-md p-1 my-2"
                         />
                         <span
                             v-if="promoCode.code !== '' && discountCode?.discount === 0"
